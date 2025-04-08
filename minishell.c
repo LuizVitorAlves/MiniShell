@@ -35,12 +35,11 @@ int main(int argc, char *argv[])
 
         }
 
-        if(ft_strncmp(args[0], "exit", 4) == 0)
+        if(ft_strncmp(args[0], "exit", 4) == 0 && (args[0][4] == '\0' || args[0][4] == ' '))
         {
             //liberar a matriz args
             //liberar a matriz input
             exit(0);
-            printf("ola");
         }
         free(input);
     }
