@@ -10,4 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef MINISHELL_H
+    #define MINISHELL_H
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <readline/history.h>
+    # include <readline/readline.h>
+    #include "libft/libft.h"
+    char    **put_args_array(char *input);
 
+
+#endif

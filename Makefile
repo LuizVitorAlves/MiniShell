@@ -1,5 +1,4 @@
 NAME = minishell
-
 LIBFT_DIR = libft
 SRCS = minishell.c parser.c executor.c builtins.c signals.c
 OBJS = $(SRCS:.c=.o)
@@ -10,9 +9,11 @@ INCLUDES = -I. -I$(LIBFT_DIR)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	make -C $(LIBFT_DIR)
+$(NAME): $(LIBFT_DIR)/libft.a $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS)
+
+$(LIBFT_DIR)/libft.a:
+	make -C $(LIBFT_DIR)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

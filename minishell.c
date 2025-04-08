@@ -10,15 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "minishell.h"
 
 int main(int argc, char *argv[])
 {
     char *input;
+    char    **args;
 
+    (void )argv;
+    (void )argc;
     while(1)
     {
         input = readline("minishell$");
@@ -27,7 +27,21 @@ int main(int argc, char *argv[])
             exit(0);
         }
         else
-            printf("%s \n", input);
+        {
+         
+                args = put_args_array(input);
+             
+         
+
+        }
+
+        if(ft_strncmp(args[0], "exit", 4) == 0)
+        {
+            //liberar a matriz args
+            //liberar a matriz input
+            exit(0);
+            printf("ola");
+        }
         free(input);
     }
 }
