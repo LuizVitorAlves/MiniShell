@@ -10,4 +10,32 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int main(int argc, char *argv[])
+{
+    char *input;
+
+    while(1)
+    {
+        input = readline("minishell$");
+        if(!input)
+        {
+            exit(0);
+        }
+        else
+            printf("%s \n", input);
+        free(input);
+    }
+}
+
+
+
+
+
+
+
 
