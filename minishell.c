@@ -28,19 +28,20 @@ int main(int argc, char *argv[])
         }
         else
         {
-         
-                args = put_args_array(input);
-             
-         
-
+            args = put_args_array(input);
         }
-
+        if (input[0])
+			add_history(input);
+        
         if(ft_strncmp(args[0], "exit", 4) == 0 && (args[0][4] == '\0' || args[0][4] == ' '))
         {
             //liberar a matriz args
             //liberar a matriz input
             exit(0);
         }
+        // tokens = tokenize(input);
+		// print_tokens(tokens);
+		// free_tokens(input);
         free(input);
     }
 }
