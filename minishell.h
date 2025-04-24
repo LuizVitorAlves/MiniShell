@@ -20,7 +20,7 @@
 	#include <signal.h>
     #include "libft/libft.h"
     char    **put_args_array(char *input);
-
+	
 	typedef enum e_token_type
 	{
 		TOKEN_WORD,
@@ -48,6 +48,15 @@
 	char	*get_quoted_word(const char *line, int *i, char quote);
 	void	add_token(t_token **head, t_token *new_token);
 	t_token	*create_token(t_token_type type, const char *value);
+	void	ft_echo(t_token *tokens);
+	void	print_tokens(t_token *tokens);
+	void ft_exit(t_token *tokens, char *input);
+	void ft_pwd();
+	int ft_cd(t_token *tokens, char *path_name);
+
+
+
+
 
 
 

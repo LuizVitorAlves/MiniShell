@@ -12,8 +12,8 @@
 
 #include "minishell.h"
 #include <stdlib.h> //malloc
-#include <string.h> //strncpy, strncmp, strdup
-#include <ctype.h> //isspace
+// #include <string.h> //strncpy, strncmp, strdup
+// #include <ctype.h> //isspace
 #include <stdio.h> //printf
 #include <unistd.h> //write
 

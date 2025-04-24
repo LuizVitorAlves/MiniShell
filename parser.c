@@ -11,13 +11,3 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char    **put_args_array(char *input)
-{
-    char    **args;
-   
-    printf("%s \n", input);
-
-    args = ft_split(input, ' ');
-    return(args);
-}
