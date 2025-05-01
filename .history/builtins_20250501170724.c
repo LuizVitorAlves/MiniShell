@@ -272,13 +272,12 @@ void ft_env(void)
 // }
 
 
-void ft_unset(t_token *token)
+void ft_unset(char *arg)
 {
     char *equal_sign;
     int var_name_len;
     int i = 0;
     int j;
-    char *arg=token->next->value;
 
     if (!arg)
         return;

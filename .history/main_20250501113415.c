@@ -4,9 +4,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-
-char **env_vars = NULL;
-
 void	print_tokens(t_token *tokens)
 {
 	while (tokens)
@@ -71,8 +68,7 @@ int main(int argc, char *argv[])
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
-	create_env_arr(&env_vars);
-	while(1)
+    while(1)
     {
 		ft_strlcpy(path_name, "minishell$", 11);
 		sigaction(SIGINT, &sa, NULL);
@@ -94,11 +90,11 @@ int main(int argc, char *argv[])
 		if(ft_strncmp(tokens->value, "cd", 2) == 0)
 			ft_cd(tokens, path_name);
 		if(ft_strncmp(tokens->value, "export", 6) == 0)
-			ft_export(tokens);
+			ft_export(tokens->value + 6);
 		if(ft_strncmp(tokens->value, "unset", 5) == 0)
-			ft_unset(tokens);
-		if(ft_strncmp(tokens->value, "env", 3) == 0)
-			ft_env();
+			ft_unset(tokens->value + 6);
+		if(ft_strncmp(tokens->value, "print_export", 12) == 0)
+			print_export();
 		// print_tokens(tokens);
 		free_tokens(tokens);
         free(input);

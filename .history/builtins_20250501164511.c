@@ -238,20 +238,21 @@ void ft_export(t_token *token)
         if (max_vars_num != -1)
         env_vars[max_vars_num] = ft_strdup(arg);
 }
+    printf("adicionada: %s\n", env_vars[max_vars_num]);
     free(name);
 }
 
 //remove it after tests
-void ft_env(void)
+void print_export()
 {
     int i = 0;
-    // printf("entrou \n");
-    // printf("env_vars em print_export: %p\n", (void *)env_vars);
-    // printf("declare -x %s\n", env_vars[i]);
+    printf("entrou \n");
+    printf("env_vars em print_export: %p\n", (void *)env_vars);
+    printf("declare -x %s\n", env_vars[i]);
 
     while (env_vars && env_vars[i])
     {
-        printf("%s\n", env_vars[i]);
+        printf("declare -x %s\n", env_vars[i]);
         i++;
     }
 }
@@ -272,13 +273,12 @@ void ft_env(void)
 // }
 
 
-void ft_unset(t_token *token)
+void ft_unset(char *arg)
 {
     char *equal_sign;
     int var_name_len;
     int i = 0;
     int j;
-    char *arg=token->next->value;
 
     if (!arg)
         return;

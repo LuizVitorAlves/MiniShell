@@ -20,7 +20,7 @@
 	#include <signal.h>
     #include "libft/libft.h"
     char    **put_args_array(char *input);
-	extern char **env_vars;
+	
 	typedef enum e_token_type
 	{
 		TOKEN_WORD,
@@ -53,12 +53,6 @@
 	void ft_exit(t_token *tokens, char *input);
 	void ft_pwd();
 	int ft_cd(t_token *tokens, char *path_name);
-	void ft_export(t_token *token);
-	void ft_unset(t_token *token);
-	void create_env_arr(char ***env_vars);
-	void ft_env(void);//remove after test
-
-
 
 
 

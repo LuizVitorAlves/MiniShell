@@ -238,6 +238,7 @@ void ft_export(t_token *token)
         if (max_vars_num != -1)
         env_vars[max_vars_num] = ft_strdup(arg);
 }
+    printf("adicionada: %s\n", env_vars[max_vars_num]);
     free(name);
 }
 
@@ -272,13 +273,12 @@ void ft_env(void)
 // }
 
 
-void ft_unset(t_token *token)
+void ft_unset(char *arg)
 {
     char *equal_sign;
     int var_name_len;
     int i = 0;
     int j;
-    char *arg=token->next->value;
 
     if (!arg)
         return;

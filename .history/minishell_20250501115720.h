@@ -53,10 +53,10 @@
 	void ft_exit(t_token *tokens, char *input);
 	void ft_pwd();
 	int ft_cd(t_token *tokens, char *path_name);
-	void ft_export(t_token *token);
-	void ft_unset(t_token *token);
+	void ft_export(char *arg);
+	void ft_unset(char *arg);
 	void create_env_arr(char ***env_vars);
-	void ft_env(void);//remove after test
+	void print_export();//remove after test
 
 
 

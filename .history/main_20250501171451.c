@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		if(ft_strncmp(tokens->value, "export", 6) == 0)
 			ft_export(tokens);
 		if(ft_strncmp(tokens->value, "unset", 5) == 0)
-			ft_unset(tokens);
+			ft_unset(tokens->value + 6);
 		if(ft_strncmp(tokens->value, "env", 3) == 0)
 			ft_env();
 		// print_tokens(tokens);
