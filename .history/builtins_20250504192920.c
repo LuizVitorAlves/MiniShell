@@ -236,7 +236,7 @@ void ft_export(t_token *token)
     }
     if (ret_search == 0)
     {
-        max_vars_num = max_vars(1);
+        max_vars_num = max_vars();
         if (max_vars_num != -1)
         env_vars[max_vars_num] = ft_strdup(arg);
 }
@@ -294,7 +294,6 @@ void ft_unset(t_token *token)
             if (ft_strlen(arg) == (size_t)var_name_len &&
                 ft_strncmp(env_vars[i], arg, var_name_len) == 0)
             {
-                max_vars(-1);
                 ft_bzero(env_vars[i], ft_strlen(env_vars[i]));
                 j = i;
                 while (env_vars[j])

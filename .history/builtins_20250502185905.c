@@ -189,13 +189,11 @@ void create_env_arr(char ***env_vars)
 }
 
 
-int max_vars(int num)
+int max_vars()
 {
     static int num_vars = -1;
-    if(num == 1)
-        num_vars++;
-    else
-        num_vars--;
+
+    num_vars++;
     if(num_vars <= 1024)
         return (num_vars);
     return (-1);
@@ -236,11 +234,11 @@ void ft_export(t_token *token)
     }
     if (ret_search == 0)
     {
-        max_vars_num = max_vars(1);
+        max_vars_num = max_vars();
         if (max_vars_num != -1)
         env_vars[max_vars_num] = ft_strdup(arg);
 }
-    printf("teste:%s \n", env_vars[0]);
+    printf("%s", env_vars[0]);
     free(name);
 }
 
@@ -294,8 +292,7 @@ void ft_unset(t_token *token)
             if (ft_strlen(arg) == (size_t)var_name_len &&
                 ft_strncmp(env_vars[i], arg, var_name_len) == 0)
             {
-                max_vars(-1);
-                ft_bzero(env_vars[i], ft_strlen(env_vars[i]));
+                free(env_vars[i]);
                 j = i;
                 while (env_vars[j])
                 {
