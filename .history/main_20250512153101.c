@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		// if(ft_strncmp(tokens->value, "env", 3) == 0)
 		// 	ft_env();
 		// print_tokens(tokens);
-		executor(tokens, path_name, input);
+		executor(tokens);
 		free_tokens(tokens);
         free(input);
     }

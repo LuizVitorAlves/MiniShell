@@ -12,14 +12,7 @@
 #include "minishell.h"
 static int check_pipes(t_token *tokens)
 {
-    t_token  tokens_cpy;
-
-    tokens_cpy = tokens;
-    tokens_cpy=tokens_cpy->next;
-    while(tokens_cpy->next)
-    {
-      //setar variavel para mudança   
-    }
+    
 }
 void executor( t_token *tokens, char *path_name, char *input)
 {

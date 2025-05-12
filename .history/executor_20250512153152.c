@@ -10,28 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
-static int check_pipes(t_token *tokens)
-{
-    t_token  tokens_cpy;
 
-    tokens_cpy = tokens;
-    tokens_cpy=tokens_cpy->next;
-    while(tokens_cpy->next)
-    {
-      //setar variavel para mudança   
-    }
-}
-void executor( t_token *tokens, char *path_name, char *input)
+void executor( t_token *tokens)
 {
     if(ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
       ft_exit(tokens, input);
     if(ft_strncmp(tokens->value, "echo", 4) == 0)
-    {
-        if(ft_strncmp(tokens->next->next->value, "|", 1) == 0)
-            printf("tem pipe nesta bagaça");
-        else
-            ft_echo(tokens);
-    }
+        ft_echo(tokens);
     if(ft_strncmp(tokens->value, "pwd", 3) == 0)
         ft_pwd();
     if(ft_strncmp(tokens->value, "cd", 2) == 0)

@@ -10,17 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "minishell.h"
-static int check_pipes(t_token *tokens)
-{
-    t_token  tokens_cpy;
 
-    tokens_cpy = tokens;
-    tokens_cpy=tokens_cpy->next;
-    while(tokens_cpy->next)
-    {
-      //setar variavel para mudança   
-    }
-}
 void executor( t_token *tokens, char *path_name, char *input)
 {
     if(ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
