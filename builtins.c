@@ -28,7 +28,9 @@ void ft_exit(t_token *tokens, char *input)
 void   ft_echo(t_token *tokens)
 {
     int check;
+    int i;
    
+    i = 0;
     check = 0;
     tokens = tokens->next;
     if(ft_strncmp(tokens->value, "-n",2) == 0)
@@ -37,9 +39,23 @@ void   ft_echo(t_token *tokens)
         tokens = tokens->next;
     }
     while(tokens->next)
-    {   
-        
-        printf("%s ", tokens->value);
+    {
+        if(ft_strncmp(tokens->value, "$", 1) == 0)
+        {
+    
+            while(env_vars[i])
+            {
+                ft_strncmp(env_vars[i], tokens->value+1, ft_strlen(tokens->value) == 0);
+                {
+                 
+
+                        printf("%s", ft_strchr(env_vars[i], '=')+1);
+                }
+                i++;
+            }
+        }
+        else
+            printf("%s ", tokens->value);
         tokens = tokens->next;
     }
     if(check ==0)

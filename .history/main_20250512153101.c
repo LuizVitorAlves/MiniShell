@@ -59,7 +59,7 @@ void	handler_ctr_c(int sig)
     rl_redisplay();             // reexibe o prompt
 }
 
-int main(int argc, char *argv[], char **env)
+int main(int argc, char *argv[])
 {
     char	*input;
 	char	path_name[1024];
@@ -67,11 +67,7 @@ int main(int argc, char *argv[], char **env)
 	struct sigaction sa;
 	struct sigaction sa_quit;
 
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler_ctr_c;
-	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = SA_RESTART;
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
@@ -104,7 +100,7 @@ int main(int argc, char *argv[], char **env)
 		// if(ft_strncmp(tokens->value, "env", 3) == 0)
 		// 	ft_env();
 		// print_tokens(tokens);
-		executor(tokens, path_name, input);
+		executor(tokens);
 		free_tokens(tokens);
         free(input);
     }

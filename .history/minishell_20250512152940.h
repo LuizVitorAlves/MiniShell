@@ -57,7 +57,7 @@
 	void ft_unset(t_token *token);
 	void create_env_arr(char ***env_vars);
 	void ft_env(void);//remove after test
-	void executor(t_token *tokens, char *path_name, char *input);
+	void executor(t_token tokens);
 
 
 
