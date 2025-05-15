@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/08 14:36:33 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 02:12:10 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,15 @@ int max_vars(int num)
         return (num_vars);
     return (-1);
 }
+int test_namevar(char *name)
+{
+    
 
+    
+    if(ft_isalpha(name[0]) != 0 || ft_strncmp(&name[0], "_", 1) == 0)
+        return(0);
+    return(-1);
+}
 
 
 void ft_export(t_token *token)
@@ -135,27 +143,33 @@ void ft_export(t_token *token)
     name_len = eq_pos - arg;
     name = malloc(sizeof(char) * (name_len + 1));
     ft_strlcpy(name, arg, name_len);
-    name[name_len] = '\0';
-    i = 0;
-    ret_search = 0;
-    while (env_vars[i] != NULL)
+    //checar se o nome é valido
+    if(test_namevar(name) != 0)
+        write(1,"forbiden name", 13);
+    else
     {
-        if (ft_strncmp(env_vars[i], name, name_len) == 0 && env_vars[i][name_len] == '=')
+        name[name_len] = '\0';
+        i = 0;
+        ret_search = 0;
+        while (env_vars[i] != NULL)
         {
-            // mesma variável, substituir valor
-            free(env_vars[i]);
-            env_vars[i] = ft_strdup(arg);
-            ret_search = 1;
-            break;
+            if (ft_strncmp(env_vars[i], name, name_len) == 0 && env_vars[i][name_len] == '=')
+            {
+                // mesma variável, substituir valor
+                free(env_vars[i]);
+                env_vars[i] = ft_strdup(arg);
+                ret_search = 1;
+                break;
+            }
+            i++;
         }
-        i++;
+        if (ret_search == 0)
+        {
+            max_vars_num = max_vars(1);
+            if (max_vars_num != -1)
+            env_vars[max_vars_num] = ft_strdup(arg);
+        }
     }
-    if (ret_search == 0)
-    {
-        max_vars_num = max_vars(1);
-        if (max_vars_num != -1)
-        env_vars[max_vars_num] = ft_strdup(arg);
-}
     printf("teste:%s \n", env_vars[0]);
     free(name);
 }

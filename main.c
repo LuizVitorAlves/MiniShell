@@ -59,7 +59,7 @@ void	handler_ctr_c(int sig)
     rl_redisplay();             // reexibe o prompt
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char **env)
 {
     char	*input;
 	char	path_name[1024];
