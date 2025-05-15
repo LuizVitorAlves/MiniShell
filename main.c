@@ -61,7 +61,6 @@ void	handler_ctr_c(int sig)
 
 int main(int argc, char *argv[], char **env)
 {
-	(void )env;
     char	*input;
 	char	path_name[1024];
     t_token    *tokens;
@@ -76,7 +75,8 @@ int main(int argc, char *argv[], char **env)
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
-	create_env_arr(&env_vars);
+	
+	create_env_arr(&env_vars, env);
 	while(1)
     {
 		ft_strlcpy(path_name, "minishell$", 11);
@@ -89,22 +89,7 @@ int main(int argc, char *argv[], char **env)
 			tokens = tokenize(input);
         if (input[0])
 			add_history(input);
-        
-        // if(ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
-        //     ft_exit(tokens, input);
-		// if(ft_strncmp(tokens->value, "echo", 4) == 0)
-		// 	ft_echo(tokens);
-		// if(ft_strncmp(tokens->value, "pwd", 3) == 0)
-		// 	ft_pwd();
-		// if(ft_strncmp(tokens->value, "cd", 2) == 0)
-		// 	ft_cd(tokens, path_name);
-		// if(ft_strncmp(tokens->value, "export", 6) == 0)
-		// 	ft_export(tokens);
-		// if(ft_strncmp(tokens->value, "unset", 5) == 0)
-		// 	ft_unset(tokens);
-		// if(ft_strncmp(tokens->value, "env", 3) == 0)
-		// 	ft_env();
-		// print_tokens(tokens);
+
 		executor(tokens, path_name, input);
 		free_tokens(tokens);
         free(input);

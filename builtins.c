@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/15 02:12:10 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 10:24:30 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,42 +25,64 @@ void ft_exit(t_token *tokens, char *input)
     free(input);
     exit(0);
 }
-void   ft_echo(t_token *tokens)
-{
-    int check;
-    int i;
-   
-    i = 0;
-    check = 0;
-    tokens = tokens->next;
-    if(ft_strncmp(tokens->value, "-n",2) == 0)
-    {
-        check =1;
-        tokens = tokens->next;
-    }
-    while(tokens->next)
-    {
-        if(ft_strncmp(tokens->value, "$", 1) == 0)
-        {
-    
-            while(env_vars[i])
-            {
-                ft_strncmp(env_vars[i], tokens->value+1, ft_strlen(tokens->value) == 0);
-                {
-                 
 
-                        printf("%s", ft_strchr(env_vars[i], '=')+1);
+char *get_my_env(t_token *tokens)
+{
+    int i;
+     char *var_name = tokens->value + 1;
+            int found = 0;
+            i = 0;
+
+            while (env_vars[i])
+            {
+                char *eq = ft_strchr(env_vars[i], '=');
+                if (eq && (size_t)(eq - env_vars[i]) == ft_strlen(var_name) &&
+                    ft_strncmp(env_vars[i], var_name, eq - env_vars[i]) == 0)
+                {
+                    return( eq + 1); // valor da variável
+                    found = 1;
+                    break;
                 }
                 i++;
             }
-        }
-        else
-            printf("%s ", tokens->value);
+            if (!found)
+                return("");
+            return("");
+}
+void ft_echo(t_token *tokens)
+{
+    int check = 0;
+   
+
+    tokens = tokens->next; // pula "echo"
+
+    // verifica se tem flag -n
+    if (tokens && ft_strncmp(tokens->value, "-n", 3) == 0)
+    {
+        check = 1;
         tokens = tokens->next;
     }
-    if(check ==0)
+
+    while (tokens)
+    {
+        if (tokens->value[0] == '$')
+        {
+            printf("%s",get_my_env(tokens));
+        }
+        else
+        {
+            printf("%s", tokens->value);
+        }
+
+        if (tokens->next)
+            printf(" ");
+        tokens = tokens->next;
+    }
+
+    if (!check)
         printf("\n");
 }
+
 void ft_pwd()
 {
     char *buffer;
@@ -98,26 +120,42 @@ int ft_cd(t_token *tokens, char *path_name)
     return 0;
 }
 
-void create_env_arr(char ***env_vars)
+
+void create_env_arr(char ***env_vars, char **env)
 {
-    int i;
+    int i = 0;
 
     if (!*env_vars)
     {
-        *env_vars = malloc(sizeof(char *) * 1025); // aloca array de 1025 ponteiros
+        *env_vars = malloc(sizeof(char *) * 1025);
         if (!*env_vars)
         {
             perror("malloc failed");
             exit(EXIT_FAILURE);
         }
 
-        i = 0;
         while (i < 1025)
         {
-            (*env_vars)[i] = NULL; // agora é seguro atribuir
+            (*env_vars)[i] = NULL;
             i++;
         }
     }
+
+    i = 0;
+    while (env[i])
+    {
+        size_t len = ft_strlen(env[i]) + 1;
+        (*env_vars)[i] = malloc(len);
+        if (!(*env_vars)[i])
+        {
+            perror("malloc failed");
+            exit(EXIT_FAILURE);
+        }
+
+        ft_strlcpy((*env_vars)[i], env[i], len);
+        i++;
+    }
+    (*env_vars)[i] = NULL; // termina com NULL para ser um array de strings válido
 }
 
 
@@ -134,9 +172,6 @@ int max_vars(int num)
 }
 int test_namevar(char *name)
 {
-    
-
-    
     if(ft_isalpha(name[0]) != 0 || ft_strncmp(&name[0], "_", 1) == 0)
         return(0);
     return(-1);
@@ -159,7 +194,7 @@ void ft_export(t_token *token)
     name_len = eq_pos - arg;
     name = malloc(sizeof(char) * (name_len + 1));
     ft_strlcpy(name, arg, name_len);
-    //checar se o nome é valido
+    
     if(test_namevar(name) != 0)
         write(1,"forbiden name", 13);
     else
@@ -186,7 +221,6 @@ void ft_export(t_token *token)
             env_vars[max_vars_num] = ft_strdup(arg);
         }
     }
-    printf("teste:%s \n", env_vars[0]);
     free(name);
 }
 

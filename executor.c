@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/15 04:15:37 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 09:08:22 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ void executor(t_token *tokens, char *path_name, char *input)
         waitpid(pid2, NULL, 0);
         return;
     }
-
     // Casos sem pipe
     if (ft_strncmp(tokens->value, "echo", 4) == 0)
         ft_echo(tokens);
@@ -144,7 +143,12 @@ void executor(t_token *tokens, char *path_name, char *input)
     if (ft_strncmp(tokens->value, "cd", 2) == 0)
         ft_cd(tokens, path_name);
     if (ft_strncmp(tokens->value, "export", 6) == 0)
-        ft_export(tokens);
+    {
+        if(tokens->next)
+            ft_export(tokens);
+        if(ft_strlen(tokens->next->value) == 0)
+            ft_env();
+    }
     if (ft_strncmp(tokens->value, "unset", 5) == 0)
         ft_unset(tokens);
     if (ft_strncmp(tokens->value, "env", 3) == 0)

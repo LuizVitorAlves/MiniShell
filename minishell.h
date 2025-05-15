@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/11 16:57:58 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 05:31:58 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@
 	int ft_cd(t_token *tokens, char *path_name);
 	void ft_export(t_token *token);
 	void ft_unset(t_token *token);
-	void create_env_arr(char ***env_vars);
+	void create_env_arr(char ***env_vars, char **env);
 	void ft_env(void);//remove after test
 	void executor(t_token *tokens, char *path_name, char *input);
 
