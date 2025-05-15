@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/15 10:24:30 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 13:43:33 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,24 +29,20 @@ void ft_exit(t_token *tokens, char *input)
 char *get_my_env(t_token *tokens)
 {
     int i;
+    char *eq;
      char *var_name = tokens->value + 1;
-            int found = 0;
             i = 0;
 
             while (env_vars[i])
             {
-                char *eq = ft_strchr(env_vars[i], '=');
+                eq = ft_strchr(env_vars[i], '=');
                 if (eq && (size_t)(eq - env_vars[i]) == ft_strlen(var_name) &&
                     ft_strncmp(env_vars[i], var_name, eq - env_vars[i]) == 0)
                 {
-                    return( eq + 1); // valor da variável
-                    found = 1;
-                    break;
+                    return( eq + 1);
                 }
                 i++;
             }
-            if (!found)
-                return("");
             return("");
 }
 void ft_echo(t_token *tokens)
@@ -196,7 +192,7 @@ void ft_export(t_token *token)
     ft_strlcpy(name, arg, name_len);
     
     if(test_namevar(name) != 0)
-        write(1,"forbiden name", 13);
+        write(1,"forbiden name \n", 14);
     else
     {
         name[name_len] = '\0';
