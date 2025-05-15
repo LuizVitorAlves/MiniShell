@@ -67,7 +67,11 @@ int main(int argc, char *argv[])
 	struct sigaction sa;
 	struct sigaction sa_quit;
 
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler_ctr_c;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = SA_RESTART;
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
