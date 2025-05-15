@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/11 16:57:58 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/15 03:51:52 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@
     # include <readline/readline.h>
 	#include <signal.h>
     #include "libft/libft.h"
-    char    **put_args_array(char *input);
-	extern char **env_vars;
+	
 	typedef enum e_token_type
 	{
 		TOKEN_WORD,
@@ -38,6 +37,34 @@
 		char				*value;
 		struct s_token		*next;
 	}	t_token;
+
+	typedef enum e_node_type
+    {   
+        NODE_COMMAND,
+        NODE_PIPE,
+        NODE_REDIR
+    }   t_node_type;
+
+    typedef struct s_redir
+    {   
+        int             type;
+        char            *file;
+        struct s_redir  *next;
+    }   t_redir;
+
+    typedef struct s_command
+    {   
+        char    **args;
+        t_redir *redirs;
+    }   t_command;
+
+    typedef struct s_node
+    {   
+        t_node_type     type;
+        struct s_node   *left;
+        struct s_node   *right;
+        t_command       *command;
+    }   t_node;
 
 	//Lexer.c
 	t_token	*tokenize(const char *line);
@@ -57,13 +84,17 @@
 	void ft_unset(t_token *token);
 	void create_env_arr(char ***env_vars);
 	void ft_env(void);//remove after test
+	char    **put_args_array(char *input);
+	extern char **env_vars;
 
-
-
-
-
-
-
-
-
+	//Parser.c
+	void free_redirs(t_redir *redir);
+	void free_command(t_command *cmd);
+	void free_node(t_node *node);
+	int add_redir(t_command *command, t_token *redir_token);
+	int handle_redir(t_command *cmd, t_token **curr);
+	t_node  *parse_command(t_token **tokens);
+	t_node *parse_pipeline(t_token **tokens);
+	t_node *parse_line(t_token **tokens);
+	
 #endif
