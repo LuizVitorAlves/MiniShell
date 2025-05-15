@@ -61,6 +61,7 @@ void	handler_ctr_c(int sig)
 
 int main(int argc, char *argv[], char **env)
 {
+	(void )env;
     char	*input;
 	char	path_name[1024];
     t_token    *tokens;

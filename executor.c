@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/07 15:17:58 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/05/15 04:15:37 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "minishell.h"
-<<<<<<< HEAD
+
 
 
 #include <unistd.h>
+#include"minishell.h"
 
 void ft_cat_builtin(void)
 {
@@ -153,38 +153,4 @@ void executor(t_token *tokens, char *path_name, char *input)
         ft_exit(tokens, input);
     if (ft_strncmp(tokens->value, "cat", 3) == 0)
         ft_cat_builtin();
-=======
-static int check_pipes(t_token *tokens)
-{
-    t_token  tokens_cpy;
-
-    tokens_cpy = tokens;
-    tokens_cpy=tokens_cpy->next;
-    while(tokens_cpy->next)
-    {
-      //setar variavel para mudança   
-    }
-}
-void executor( t_token *tokens, char *path_name, char *input)
-{
-    if(ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
-      ft_exit(tokens, input);
-    if(ft_strncmp(tokens->value, "echo", 4) == 0)
-    {
-        if(ft_strncmp(tokens->next->next->value, "|", 1) == 0)
-            printf("tem pipe nesta bagaça");
-        else
-            ft_echo(tokens);
-    }
-    if(ft_strncmp(tokens->value, "pwd", 3) == 0)
-        ft_pwd();
-    if(ft_strncmp(tokens->value, "cd", 2) == 0)
-        ft_cd(tokens, path_name);
-    if(ft_strncmp(tokens->value, "export", 6) == 0)
-        ft_export(tokens);
-    if(ft_strncmp(tokens->value, "unset", 5) == 0)
-        ft_unset(tokens);
-    if(ft_strncmp(tokens->value, "env", 3) == 0)
-        ft_env();
->>>>>>> 783bb43 (passando exexução para o executor)
 }
