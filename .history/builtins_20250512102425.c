@@ -3,34 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/08 14:36:33 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/04/07 15:18:21 by lalves-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 void ft_exit(t_token *tokens, char *input)
 {
-    const t_token *token = tokens;
-
-    while (token)
-    {
-        tokens = tokens->next;
-        free(token->value);
-        free((t_token*)token);
-        token = tokens;
-    }
+    free(tokens);
     free(input);
     exit(0);
 }
 void   ft_echo(t_token *tokens)
 {
     int check;
-    int i;
-   
-    i = 0;
+    
     check = 0;
     tokens = tokens->next;
     if(ft_strncmp(tokens->value, "-n",2) == 0)
@@ -42,20 +32,9 @@ void   ft_echo(t_token *tokens)
     {
         if(ft_strncmp(tokens->value, "$", 1) == 0)
         {
-    
-            while(env_vars[i])
-            {
-                ft_strncmp(env_vars[i], tokens->value+1, ft_strlen(tokens->value) == 0);
-                {
-                 
-
-                        printf("%s", ft_strchr(env_vars[i], '=')+1);
-                }
-                i++;
-            }
+            ft_env();
         }
-        else
-            printf("%s ", tokens->value);
+        printf("%s ", tokens->value);
         tokens = tokens->next;
     }
     if(check ==0)

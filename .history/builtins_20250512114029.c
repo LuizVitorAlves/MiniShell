@@ -3,25 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/08 14:36:33 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/04/07 15:18:21 by lalves-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 void ft_exit(t_token *tokens, char *input)
 {
-    const t_token *token = tokens;
-
-    while (token)
-    {
-        tokens = tokens->next;
-        free(token->value);
-        free((t_token*)token);
-        token = tokens;
-    }
+    free(tokens);
     free(input);
     exit(0);
 }
@@ -49,7 +41,7 @@ void   ft_echo(t_token *tokens)
                 {
                  
 
-                        printf("%s", ft_strchr(env_vars[i], '=')+1);
+                        printf("%s", ft_strchr(env_vars[i], '='));
                 }
                 i++;
             }
