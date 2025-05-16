@@ -1,7 +1,7 @@
 NAME = minishell
 LIBFT_DIR = libft
 
-SRCS = parser.c executor.c builtins.c signals.c main.c lexer.c
+SRCS = parser.c executor.c builtins.c signals.c main.c lexer.c free_parser.c parser_utils.c
 OBJS = $(SRCS:.c=.o)
 
 CC = cc

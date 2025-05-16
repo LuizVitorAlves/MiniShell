@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/15 03:51:52 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/16 16:12:51 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
     #define MINISHELL_H
     #include <stdio.h>
     #include <stdlib.h>
+	#include <unistd.h>
     #include <readline/history.h>
     # include <readline/readline.h>
 	#include <signal.h>
@@ -88,13 +89,21 @@
 	extern char **env_vars;
 
 	//Parser.c
-	void free_redirs(t_redir *redir);
-	void free_command(t_command *cmd);
-	void free_node(t_node *node);
-	int add_redir(t_command *command, t_token *redir_token);
-	int handle_redir(t_command *cmd, t_token **curr);
 	t_node  *parse_command(t_token **tokens);
 	t_node *parse_pipeline(t_token **tokens);
 	t_node *parse_line(t_token **tokens);
+
+	//Free_Parser.c
+	void free_redirs(t_redir *redir);
+	void free_command(t_command *cmd);
+	void free_node(t_node *node);
+
+	//Parser_utils.c
+	int	handle_redirection(t_command *cmd, t_token **curr);
+	int	init_command_node(t_node **node, t_command **cmd, char ***args);
+	int	attach_redirection_or_arg(t_command *cmd, t_token **curr,
+			char **args, int *argc);
+	void	fill_command_args(t_command *cmd, char **args, int argc);
+	t_node	*create_pipe_node(t_node *left, t_token **tokens);
 	
 #endif

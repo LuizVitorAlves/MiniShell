@@ -6,16 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 12:35:19 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/15 12:08:23 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/16 15:57:00 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdlib.h> //malloc
-// #include <string.h> //strncpy, strncmp, strdup
-// #include <ctype.h> //isspace
-#include <stdio.h> //printf
-#include <unistd.h> //write
 
 t_token	*create_token(t_token_type type, const char *value)
 {
