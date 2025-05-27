@@ -97,6 +97,7 @@
 	void free_redirs(t_redir *redir);
 	void free_command(t_command *cmd);
 	void free_node(t_node *node);
+	void	free_string_array(char **arr);
 
 	//Parser_utils.c
 	int	handle_redirection(t_command *cmd, t_token **curr);

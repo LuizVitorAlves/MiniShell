@@ -54,6 +54,7 @@ int	attach_redirection_or_arg(t_command *cmd, t_token **curr,
 		if (!args[*argc])
 			return (0);
 		(*argc)++;
+		*curr = (*curr)->next;
 		return (1);
 	}
 	return (handle_redirection(cmd, curr));

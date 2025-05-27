@@ -37,8 +37,7 @@ t_node	*parse_command(t_token **tokens)
 	while (curr && curr->type != TOKEN_PIPE)
 	{
 		if (!attach_redirection_or_arg(cmd, &curr, args, &argc))
-			return (free(args), free_command(cmd), free(node), NULL);
-		curr = curr->next;
+    		return (free(args), free_command(cmd), free(node), NULL);
 	}
 	fill_command_args(cmd, args, argc);
 	node->command = cmd;

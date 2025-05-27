@@ -52,3 +52,18 @@ void	free_node(t_node *node)
 	}
 	free(node);
 }
+
+void	free_string_array(char **arr)
+{
+	int	i;
+
+	if (!arr)
+		return;
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
