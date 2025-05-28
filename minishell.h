@@ -19,6 +19,9 @@
     # include <readline/readline.h>
 	#include <signal.h>
     #include "libft/libft.h"
+
+	#include <limits.h>
+
     char    **put_args_array(char *input);
 	extern char **env_vars;
 	typedef enum e_token_type
@@ -52,12 +55,21 @@
 	void	print_tokens(t_token *tokens);
 	void ft_exit(t_token *tokens, char *input);
 	void ft_pwd();
-	int ft_cd(t_token *tokens, char *path_name);
-	void ft_export(t_token *token);
-	void ft_unset(t_token *token);
+	//int ft_cd(t_token *tokens, char *path_name);
+	int ft_cd(t_token *tokens, char *path_name, char ***envp);
+
+	void ft_export(t_token *token, char ***new_envp);
+	void ft_unset(t_token *token, char ***new_envp);
 	void create_env_arr(char ***env_vars);
-	void ft_env(void);//remove after test
-	void executor(t_token *tokens, char *path_name, char *input);
+	void ft_env(char **env_copy);//remove after test
+	void executor(t_token *tokens, char *path_name, char *input, char ***envp);
+	void ft_cat_builtin(void);
+	int set_env_var(char ***env, const char *key, const char *value);
+	char **dup_env(char **envp);
+	char *get_cmd_path(char *cmd, char **envp);
+
+
+
 
 
 
