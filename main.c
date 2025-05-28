@@ -29,19 +29,6 @@ void	print_tokens(t_token *tokens)
 	}
 }
 
-void	free_tokens(t_token *tokens)
-{
-	t_token	*tmp;
-
-	while (tokens)
-	{
-		tmp = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = tmp;
-	}
-}
-
 void	handler_sa_quit(int sig)
 {
 	(void) sig;

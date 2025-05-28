@@ -32,6 +32,20 @@
 		TOKEN_EOF
 	}	t_token_type;
 
+	typedef struct s_builder
+	{
+		char	*str;
+		size_t	len;
+		size_t	capacity;
+	}	t_builder;
+
+	typedef enum e_state
+	{
+    	STATE_GENERAL,
+    	STATE_IN_DQUOTES,
+    	STATE_IN_SQUOTES
+	}   t_state;
+
 	typedef struct s_token
 	{
 		t_token_type		type;
@@ -68,14 +82,14 @@
     }   t_node;
 
 	//Lexer.c
-	t_token	*tokenize(const char *line);
+	/*t_token	*tokenize(const char *line);
 	t_token_type	get_token_type(const char *line, int *i);
 	char	*get_op_str(t_token_type type);
 	char	*get_word(const char *line, int *i);
 	char	*get_unquoted_word(const char *line, int *i);
 	char	*get_quoted_word(const char *line, int *i, char quote);
 	void	add_token(t_token **head, t_token *new_token);
-	t_token	*create_token(t_token_type type, const char *value);
+	t_token	*create_token(t_token_type type, const char *value);*/
 	void	ft_echo(t_token *tokens);
 	void	print_tokens(t_token *tokens);
 	void ft_exit(t_token *tokens, char *input);
@@ -87,6 +101,27 @@
 	void ft_env(void);//remove after test
 	char    **put_args_array(char *input);
 	extern char **env_vars;
+
+	//Lexer.c
+	t_token	*tokenize(const char *line);
+
+	//Lexer_builder.c
+	void	builder_init(t_builder *b);
+	void	builder_destroy(t_builder *b);
+	void	builder_append_char(t_builder *b, char c);
+	void	builder_append_str(t_builder *b, char *str);
+	char	*builder_finalize(t_builder *b);
+
+	//Lexer_utils.c
+	int	ft_isspace(int c);
+	t_token	*create_token(t_token_type type, const char *value);
+	void	add_token(t_token **head, t_token *new_token);
+	void	free_tokens(t_token *head);
+
+	//Lexer_parts.c
+	void	handle_expansion(const char *line, int *i, t_builder *builder);
+	void	get_unquoted_part(const char *line, int *i, t_builder *builder);
+	int	get_quoted_part(const char *line, int *i, t_builder *builder);
 
 	//Parser.c
 	t_node  *parse_command(t_token **tokens);
