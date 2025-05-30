@@ -1,148 +1,206 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   executor.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/07 15:17:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/30 00:09:42 by lalves-d@st      ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include "minishell.h"
-
-void ft_cat_builtin(void)
-{
-    char buffer[1024];
-    ssize_t bytes_read;
-
-    while ((bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0)
-    {
-        write(STDOUT_FILENO, buffer, bytes_read);
-    }
-}
-static int check_pipes(t_token *tokens)
-{   
-    int check_pipes;
-
-    check_pipes = 0;
-    tokens = tokens->next;
-    while(tokens->next)
-    {
-      if(ft_strncmp(tokens->value, "|",1)== 0)
-      {
-        check_pipes = 1;
-        break;
-      }
-      tokens = tokens->next;
-    }
-    return (check_pipes);
-}
 #include <sys/wait.h>
+#include <fcntl.h> 
+#include <string.h> 
+#include <errno.h>  
+#include "minishell.h" 
 
-void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2], char **newenvp)
+static int handle_redirections(t_redir *redirs, int saved_fds[2])
 {
-    pid_t pid = fork();
+    t_redir *current = redirs;
+    int original_stdin_local = -1;
+    int original_stdout_local = -1;
+    int fd;
 
-    if (pid == 0)
+    saved_fds[0] = -1; 
+    saved_fds[1] = -1;
+
+    while (current)
     {
-        // No filho: redireciona stdout para o lado de escrita do pipe
-        close(pipe_fd[0]); // fecha leitura
-        dup2(pipe_fd[1], STDOUT_FILENO); // redireciona stdout
-        close(pipe_fd[1]); // fecha após redirecionar
-
-        ft_echo(tokens, newenvp); // executa o builtin
-        exit(0);
+        if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_HEREDOC) 
+        {
+            if (original_stdin_local == -1) { 
+                original_stdin_local = dup(STDIN_FILENO);
+                if (original_stdin_local == -1) { perror("dup STDIN_FILENO"); return -1; }
+                saved_fds[0] = original_stdin_local;
+            }
+            if (current->type == TOKEN_REDIR_IN) {
+                 fd = open(current->file, O_RDONLY);
+            } else { 
+                fd = open(current->file, O_RDONLY);
+            }
+            if (fd == -1) { 
+                fprintf(stderr, "minishell: %s: %s\n", current->file, strerror(errno));
+                if (original_stdout_local != -1) { dup2(original_stdout_local, STDOUT_FILENO); close(original_stdout_local); }
+                if (original_stdin_local != -1) { dup2(original_stdin_local, STDIN_FILENO); close(original_stdin_local); }
+                return -1; 
+            }
+            if (dup2(fd, STDIN_FILENO) == -1) { perror("dup2 STDIN_FILENO"); close(fd); return -1; }
+            close(fd);
+        }
+        else if (current->type == TOKEN_REDIR_OUT || current->type == TOKEN_APPEND) 
+        {
+            if (original_stdout_local == -1) { 
+                original_stdout_local = dup(STDOUT_FILENO);
+                if (original_stdout_local == -1) { perror("dup STDOUT_FILENO"); return -1; }
+                saved_fds[1] = original_stdout_local;
+            }
+            if (current->type == TOKEN_REDIR_OUT)
+                fd = open(current->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            else 
+                fd = open(current->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            
+            if (fd == -1) { 
+                fprintf(stderr, "minishell: %s: %s\n", current->file, strerror(errno));
+                if (original_stdout_local != -1) { dup2(original_stdout_local, STDOUT_FILENO); close(original_stdout_local); }
+                if (original_stdin_local != -1) { dup2(original_stdin_local, STDIN_FILENO); close(original_stdin_local); }
+                return -1; 
+            }
+            if (dup2(fd, STDOUT_FILENO) == -1) { perror("dup2 STDOUT_FILENO"); close(fd); return -1; }
+            close(fd);
+        }
+        current = current->next;
     }
-    else
+    return 0; 
+}
+
+static void restore_fds(int saved_fds[2])
+{
+    if (saved_fds[0] != -1) 
     {
-        // No pai: fecha lado de escrita do pipe (não vai usar)
-        close(pipe_fd[1]);
-        waitpid(pid, NULL, 0);
+        if (dup2(saved_fds[0], STDIN_FILENO) == -1) perror("restore_fds: dup2 stdin");
+        close(saved_fds[0]);
+    }
+    if (saved_fds[1] != -1) 
+    {
+        if (dup2(saved_fds[1], STDOUT_FILENO) == -1) perror("restore_fds: dup2 stdout");
+        close(saved_fds[1]);
     }
 }
 
-
-
-
-int executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
+int executor(t_node *node, char ***new_envp)
 {
-    (void) check_pipes(tokens);
-    // int pipe_fd[2];
-    // int has_pipe = check_pipes(tokens);
+    int status = 0; 
+    int saved_fds[2] = {-1, -1}; 
 
-    // if (has_pipe)
-    //     pipe(pipe_fd);
+    if (!node)
+        return 0; 
 
-    // if (ft_strncmp(tokens->value, "echo", 4) == 0 && has_pipe)
-    // {
-    //     pid_t pid1 = fork();
-    //     if (pid1 == 0)
-    //     {
-    //         // Filho 1: echo → escreve no pipe
-    //         close(pipe_fd[0]); // fecha leitura
-    //         dup2(pipe_fd[1], STDOUT_FILENO);
-    //         close(pipe_fd[1]);
-    //         ft_echo(tokens, *new_envp);
-    //         exit(0);
-    //     }
-
-    //     pid_t pid2 = fork();
-    //     if (pid2 == 0)
-    //     {
-    //         // Filho 2: cat ← lê do pipe
-    //         close(pipe_fd[1]); // fecha escrita
-    //         dup2(pipe_fd[0], STDIN_FILENO);
-    //         close(pipe_fd[0]);
-    //         ft_cat_builtin();
-    //         exit(0);
-    //     }
-
-    //     // Pai
-    //     close(pipe_fd[0]);
-    //     close(pipe_fd[1]);
-    //     waitpid(pid1, NULL, 0);
-    //     waitpid(pid2, NULL, 0);
-    //     return(1);
-    // }
-
-    // Casos sem pipe
-    if (ft_strncmp(tokens->value, "echo", 4) == 0)
-        ft_echo(tokens, *new_envp);
-    else if (ft_strncmp(tokens->value, "pwd", 3) == 0)
-        ft_pwd();
-    else if (ft_strncmp(tokens->value, "cd", 2) == 0)
-        ft_cd(tokens, path_name, new_envp);
-    else if (ft_strncmp(tokens->value, "export", 6) == 0)
-        ft_export(tokens, new_envp);
-    else if (ft_strncmp(tokens->value, "unset", 5) == 0)
-        ft_unset(tokens, new_envp);
-    else if (ft_strncmp(tokens->value, "env", 3) == 0)
-        ft_env(*new_envp);
-    else if (ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
-        ft_exit(tokens, input);
-    else if (ft_strncmp(tokens->value, "cat", 3) == 0)
-        ft_cat_builtin();
-    else
+    if (node->type == NODE_PIPE)
     {
-        char *cmd_path = get_cmd_path(tokens->value, *new_envp);
+        int pipe_fd[2];
+        pid_t pid_left, pid_right;
 
-        if (cmd_path)
+        if (pipe(pipe_fd) == -1) {
+            perror("minishell: pipe");
+            return (1); 
+        }
+
+        pid_left = fork();
+        if (pid_left == -1) { perror("minishell: fork (left)"); close(pipe_fd[0]); close(pipe_fd[1]); return (1); }
+        if (pid_left == 0) { 
+            close(pipe_fd[0]); 
+            if (dup2(pipe_fd[1], STDOUT_FILENO) == -1) { perror("minishell: dup2 stdout to pipe"); exit(1); }
+            close(pipe_fd[1]); 
+            exit(executor(node->left, new_envp)); 
+        }
+
+        pid_right = fork();
+        if (pid_right == -1) { perror("minishell: fork (right)"); close(pipe_fd[0]); close(pipe_fd[1]); waitpid(pid_left, NULL, 0); return (1); }
+        if (pid_right == 0) { 
+            close(pipe_fd[1]); 
+            if (dup2(pipe_fd[0], STDIN_FILENO) == -1) { perror("minishell: dup2 stdin from pipe"); exit(1); }
+            close(pipe_fd[0]); 
+            exit(executor(node->right, new_envp)); 
+        }
+
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+        
+        waitpid(pid_left, NULL, 0); 
+        waitpid(pid_right, &status, 0); 
+        
+        if (WIFEXITED(status)) {
+            status = WEXITSTATUS(status);
+        } else {
+            status = 1; 
+        }
+
+    }
+    else if (node->type == NODE_COMMAND)
+    {
+        t_command *cmd = node->command;
+        if (!cmd || !cmd->args || !cmd->args[0]) { 
+            return 0; 
+        }
+        
+        char *command_name = cmd->args[0];
+
+        if (handle_redirections(cmd->redirs, saved_fds) == -1) {
+            restore_fds(saved_fds); 
+            return 1;
+        }
+
+        if (ft_strcmp(command_name, "echo") == 0)
+            ft_echo(cmd);
+        else if (ft_strcmp(command_name, "cd") == 0)
+            status = ft_cd(cmd, new_envp);
+        else if (ft_strcmp(command_name, "pwd") == 0)
+            ft_pwd(cmd);
+        else if (ft_strcmp(command_name, "export") == 0)
+            ft_export(cmd, new_envp);
+        else if (ft_strcmp(command_name, "unset") == 0)
+            ft_unset(cmd, new_envp);
+        else if (ft_strcmp(command_name, "env") == 0)
+            ft_env(cmd, *new_envp);
+        else if (ft_strcmp(command_name, "exit") == 0)
+            ft_exit(cmd);
+        else if(ft_strcmp(command_name, "."))
         {
-            execve(cmd_path, &tokens->value, *new_envp);
-            perror("execve");
-            exit(1);
+            int i = 0;
+            while((*new_envp)[i] != NULL && ft_strncmp((*new_envp)[i], "PWD=",4)!= 0)
+            { 
+                i++;
+            }
+            char *test = ft_strdup(ft_strchr((*new_envp)[i], '=')+1);
+            char *full_path = ft_strjoin(test, "/minishell");
+            
+            execve(full_path, cmd->args, *new_envp);
+
+            // printf("%s", test);
         }
         else
         {
-            fprintf(stderr, "%s: command not found\n", tokens->value);
-            exit(127);
+            pid_t pid = fork();
+            if (pid == -1) { 
+                perror("minishell: fork (external cmd)"); 
+                status = 1;
+            }
+            else if (pid == 0) { 
+                char *cmd_path = get_cmd_path(command_name, *new_envp); 
+                if (cmd_path) {
+                    execve(cmd_path, cmd->args, *new_envp);
+                    fprintf(stderr, "minishell: %s: %s\n", command_name, strerror(errno));
+                    free(cmd_path);
+                    exit(126); 
+                } else {
+                    fprintf(stderr, "minishell: %s: command not found\n", command_name);
+                    exit(127); 
+                }
+            } else { 
+                waitpid(pid, &status, 0);
+                if (WIFEXITED(status)) {
+                    status = WEXITSTATUS(status);
+                } else if (WIFSIGNALED(status)) {
+                    status = 128 + WTERMSIG(status); 
+                } else {
+                    status = 1; 
+                }
+            }
         }
-
+        restore_fds(saved_fds);
     }
-    return(0);
+    return status;
 }

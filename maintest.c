@@ -292,8 +292,8 @@ static void	print_ast(t_node *node, int level)
 
 int main(int argc, char *argv[],char **envp)
 {
-    char	*input;
-    // char input[]="export oi=teste";
+    // char	*input;
+    char input[]="./minishell";
     t_node		*ast;
     // char input[]="echo $MAIL";
 	char	path_name[1024];
@@ -308,17 +308,16 @@ int main(int argc, char *argv[],char **envp)
 	(void )argv;
     (void )argc;
 	//create_env_arr(&env_vars);
-    printf("começou");
 	while(1)
     {
 		ft_strlcpy(path_name, "minishell$", 11);
 		
 		sigaction(SIGINT, &sa, NULL);
 		sigaction(SIGQUIT, &sa_quit, NULL);
-        input = readline(path_name);
-        if(!input)
-            exit(0);
-        else
+        // input = readline(path_name);
+        // if(!input)
+        //     exit(0);
+        // else
 			tokens = tokenize(input);
         tokens = tokenize(input);
         if (input[0])
@@ -328,7 +327,7 @@ int main(int argc, char *argv[],char **envp)
 		tokens = tokenize(input);
 		if (!tokens)
 		{
-			free(input);
+			// free(input);
 			continue ;
 		}
 		
@@ -336,7 +335,7 @@ int main(int argc, char *argv[],char **envp)
 		ast = parse_line(&tokens);
 		if (!ast)
 		{
-			free(input);
+			// free(input);
 			free_tokens(tokens);
 			continue ;
 		}
@@ -348,6 +347,6 @@ int main(int argc, char *argv[],char **envp)
         
         executor(ast, &envp_copy);
 		free_tokens(tokens);
-        free(input);
+        // free(input);
     }
 }
