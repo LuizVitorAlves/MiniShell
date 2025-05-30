@@ -249,19 +249,6 @@ void	print_tokens(t_token *tokens)
 	}
 }
 
-void	free_tokens(t_token *tokens)
-{
-	t_token	*tmp;
-
-	while (tokens)
-	{
-		tmp = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = tmp;
-	}
-}
-
 void	handler_sa_quit(int sig)
 {
 	(void) sig;
@@ -279,9 +266,35 @@ void	handler_ctr_c(int sig)
     rl_redisplay();             // reexibe o prompt
 }
 
+static void	print_ast(t_node *node, int level)
+{
+	int	i;
+
+	if (!node)
+		return ;
+	for (i = 0; i < level; i++)
+		printf("  ");
+	if (node->type == NODE_PIPE)
+	{
+		printf("PIPE\n");
+		print_ast(node->left, level + 1);
+		print_ast(node->right, level + 1);
+	}
+	else if (node->type == NODE_COMMAND)
+	{
+		printf("COMMAND: ");
+		i = 0;
+		while (node->command->args && node->command->args[i])
+			printf("[%s] ", node->command->args[i++]);
+		printf("\n");
+	}
+}
+
 int main(int argc, char *argv[],char **envp)
 {
-    char	*input;
+    // char	*input;
+    char input[]="echo oi";
+    t_node		*ast;
     // char input[]="echo $MAIL";
 	char	path_name[1024];
     t_token    *tokens;
@@ -301,16 +314,39 @@ int main(int argc, char *argv[],char **envp)
 		
 		sigaction(SIGINT, &sa, NULL);
 		sigaction(SIGQUIT, &sa_quit, NULL);
-        input = readline(path_name);
-        if(!input)
-            exit(0);
-        else
+        // input = readline(path_name);
+        // if(!input)
+        //     exit(0);
+        // else
 			tokens = tokenize(input);
         // tokens = tokenize(input);
         if (input[0])
 			add_history(input);
+
+        // 2. LEXER: Transforma a string em tokens
+		tokens = tokenize(input);
+		if (!tokens)
+		{
+			// free(input);
+			continue ;
+		}
+		
+		// 3. PARSER: Transforma os tokens na Árvore de Comandos (AST)
+		ast = parse_line(&tokens);
+		if (!ast)
+		{
+			// free(input);
+			free_tokens(tokens);
+			continue ;
+		}
+
+        // (Apagar dps) Imprime a árvore para ver se tudo funcionou
+		printf("--- AST Gerada ---\n");
+		print_ast(ast, 0);
+		printf("--------------------\n");
+        
         executor(tokens, path_name, input, &envp_copy);
 		free_tokens(tokens);
-        free(input);
+        // free(input);
     }
 }

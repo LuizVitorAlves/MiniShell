@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/29 17:45:55 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/30 00:09:42 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,43 +71,44 @@ void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2], char **newenvp)
 
 int executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
 {
-    int pipe_fd[2];
-    int has_pipe = check_pipes(tokens);
+    (void) check_pipes(tokens);
+    // int pipe_fd[2];
+    // int has_pipe = check_pipes(tokens);
 
-    if (has_pipe)
-        pipe(pipe_fd);
+    // if (has_pipe)
+    //     pipe(pipe_fd);
 
-    if (ft_strncmp(tokens->value, "echo", 4) == 0 && has_pipe)
-    {
-        pid_t pid1 = fork();
-        if (pid1 == 0)
-        {
-            // Filho 1: echo → escreve no pipe
-            close(pipe_fd[0]); // fecha leitura
-            dup2(pipe_fd[1], STDOUT_FILENO);
-            close(pipe_fd[1]);
-            ft_echo(tokens, *new_envp);
-            exit(0);
-        }
+    // if (ft_strncmp(tokens->value, "echo", 4) == 0 && has_pipe)
+    // {
+    //     pid_t pid1 = fork();
+    //     if (pid1 == 0)
+    //     {
+    //         // Filho 1: echo → escreve no pipe
+    //         close(pipe_fd[0]); // fecha leitura
+    //         dup2(pipe_fd[1], STDOUT_FILENO);
+    //         close(pipe_fd[1]);
+    //         ft_echo(tokens, *new_envp);
+    //         exit(0);
+    //     }
 
-        pid_t pid2 = fork();
-        if (pid2 == 0)
-        {
-            // Filho 2: cat ← lê do pipe
-            close(pipe_fd[1]); // fecha escrita
-            dup2(pipe_fd[0], STDIN_FILENO);
-            close(pipe_fd[0]);
-            ft_cat_builtin();
-            exit(0);
-        }
+    //     pid_t pid2 = fork();
+    //     if (pid2 == 0)
+    //     {
+    //         // Filho 2: cat ← lê do pipe
+    //         close(pipe_fd[1]); // fecha escrita
+    //         dup2(pipe_fd[0], STDIN_FILENO);
+    //         close(pipe_fd[0]);
+    //         ft_cat_builtin();
+    //         exit(0);
+    //     }
 
-        // Pai
-        close(pipe_fd[0]);
-        close(pipe_fd[1]);
-        waitpid(pid1, NULL, 0);
-        waitpid(pid2, NULL, 0);
-        return(1);
-    }
+    //     // Pai
+    //     close(pipe_fd[0]);
+    //     close(pipe_fd[1]);
+    //     waitpid(pid1, NULL, 0);
+    //     waitpid(pid2, NULL, 0);
+    //     return(1);
+    // }
 
     // Casos sem pipe
     if (ft_strncmp(tokens->value, "echo", 4) == 0)

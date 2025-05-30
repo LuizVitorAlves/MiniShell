@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/29 21:37:34 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/29 22:27:42 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,11 +336,6 @@ void ft_env(char **envp_copy)
     // printf("env_vars em print_export: %p\n", (void *)env_vars);
     // printf("declare -x %s\n", env_vars[i]);
 
-    while (env_vars && env_vars[i])
-    {
-        printf("%s\n", env_vars[i]);
-        i++;
-    }
     i = 0;
     while(envp_copy && envp_copy[i])
     {

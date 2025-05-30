@@ -1,192 +1,87 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   lexer.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 12:35:19 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/15 12:08:23 by lalves-d@st      ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
-#include <stdlib.h> //malloc
-// #include <string.h> //strncpy, strncmp, strdup
-// #include <ctype.h> //isspace
-#include <stdio.h> //printf
-#include <unistd.h> //write
 
-t_token	*create_token(t_token_type type, const char *value)
+static void	handle_operator(const char *line, int *i, t_token **head)
 {
-	t_token	*token;
+	char			*op_str;
+	t_token_type	type;
 
-	token = malloc(sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->type = type;
-	token->value = strdup(value);
-	token->next = NULL;
-	return (token);
-}
-
-void	add_token(t_token **head, t_token *new_token)
-{
-	t_token	*temp;
-
-	if (!*head)
-	{
-		*head = new_token;
-		return ;
-	}
-	temp = *head;
-	while (temp->next)
-		temp = temp->next;
-	temp->next = new_token;
-}
-
-char	*get_quoted_word(const char *line, int *i, char quote)
-{
-	int		start;
-	int		len;
-	char	*word;
-
-	start = *i;
-	len = 0;
-	while (line[*i] && line[*i] != quote)
-	{
-		len++;
-		(*i)++;
-	}
-	if (line[*i] != quote)
-	{
-		write(2, "syntax error: unclosed quote\n", 29);
-		return (NULL);
-	}
-	word = strndup(&line[start], len);
-	(*i)++;
-	return (word);
-}
-
-
-char	*get_unquoted_word(const char *line, int *i)
-{
-	int		start;
-	int		len;
-	char	*word;
-
-	start = *i;
-	len = 0;
-	while (line[*i]
-		&& !isspace(line[*i])
-		&& line[*i] != '|'
-		&& line[*i] != '<'
-		&& line[*i] != '>')
-	{
-		len++;
-		(*i)++;
-	}
-	word = strndup(&line[start], len);
-	return (word);
-}
-
-char	*get_word(const char *line, int *i)
-{
-	char	*word;
-
-	while (line[*i] && isspace(line[*i]))
-		(*i)++;
-	if (line[*i] == '\'' || line[*i] == '"')
-	{
-		(*i)++;
-		word = get_quoted_word(line, i, line[*i - 1]);
-		if (!word)
-			return (NULL);
-	}
-	else
-		word = get_unquoted_word(line, i);
-	return (word);
-}
-
-char	*get_op_str(t_token_type type)
-{
-	if (type == TOKEN_PIPE)
-		return ("|");
-	else if (type == TOKEN_REDIR_IN)
-		return ("<");
-	else if (type == TOKEN_REDIR_OUT)
-		return (">");
-	else if (type == TOKEN_APPEND)
-		return (">>");
-	else if (type == TOKEN_HEREDOC)
-		return ("<<");
-	return ("");
-}
-
-t_token_type	get_token_type(const char *line, int *i)
-{
-	if (line[*i] == '|')
-	{
-		(*i)++;
-		return (TOKEN_PIPE);
-	}
+	op_str = NULL;
+	if (line[*i] == '<' && line[*i + 1] == '<')
+		{type = TOKEN_HEREDOC; op_str = "<<"; *i += 2;}
+	else if (line[*i] == '>' && line[*i + 1] == '>')
+		{type = TOKEN_APPEND; op_str = ">>"; *i += 2;}
 	else if (line[*i] == '<')
-	{
-		if (line[*i + 1] == '<')
-		{
-			*i += 2;
-			return (TOKEN_HEREDOC);
-		}
-		(*i)++;
-		return (TOKEN_REDIR_IN);
-	}
+		{type = TOKEN_REDIR_IN; op_str = "<"; *i += 1;}
 	else if (line[*i] == '>')
+		{type = TOKEN_REDIR_OUT; op_str = ">"; *i += 1;}
+	else if (line[*i] == '|')
+		{type = TOKEN_PIPE; op_str = "|"; *i += 1;}
+	if (op_str)
+		add_token(head, create_token(type, op_str));
+}
+
+static char	*get_word(const char *line, int *i)
+{
+	t_builder	builder;
+	int			success;
+
+	builder_init(&builder);
+	success = 1;
+	while (success && line[*i] && !ft_isspace(line[*i]) \
+		&& !ft_strchr("|<>", line[*i]))
 	{
-		if (line[*i + 1] == '>')
-		{
-			*i += 2;
-			return (TOKEN_APPEND);
-		}
-		(*i)++;
-		return (TOKEN_REDIR_OUT);
+		if (line[*i] == '\'' || line[*i] == '\"')
+			success = get_quoted_part(line, i, &builder);
+		else
+			get_unquoted_part(line, i, &builder);
 	}
-	return (TOKEN_WORD);
+	if (!success)
+	{
+		builder_destroy(&builder);
+		return (NULL);
+	}
+	return (builder_finalize(&builder));
+}
+
+static int	process_token(const char *line, int *i, t_token **head)
+{
+	char	*word;
+
+	if (ft_isspace(line[*i]))
+		(*i)++;
+	else if (ft_strchr("|<>", line[*i]))
+		handle_operator(line, i, head);
+	else
+	{
+		word = get_word(line, i);
+		if (!word)
+		{
+			free_tokens(*head);
+			*head = NULL;
+			return (0);
+		}
+		if (*word)
+			add_token(head, create_token(TOKEN_WORD, word));
+		free(word);
+	}
+	return (1);
 }
 
 t_token	*tokenize(const char *line)
 {
-	t_token			*head;
-	t_token			*new_token;
-	t_token_type	type;
-	char			*word;
-	int				i;
+	t_token	*head;
+	int		i;
+	int		success;
 
 	head = NULL;
 	i = 0;
-	while (line[i])
+	success = 1;
+	while (line[i] && success)
 	{
-		while (line[i] && isspace(line[i]))
-			i++;
-		if (!line[i])
-			break ;
-		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-		{
-			type = get_token_type(line, &i);
-			new_token = create_token(type, get_op_str(type));
-			add_token(&head, new_token);
-		}
-		else
-		{
-			word = get_word(line, &i);
-			if (!word)
-			{
-				return (head);
-			}
-			new_token = create_token(TOKEN_WORD, word);
-			free(word);
-			add_token(&head, new_token);
-		}
+		success = process_token(line, &i, &head);
 	}
+	if (!success)
+		return (NULL);
 	add_token(&head, create_token(TOKEN_EOF, ""));
 	return (head);
 }
