@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:18:18 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/07 15:18:21 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/05/29 21:37:34 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void ft_exit(t_token *tokens, char *input)
     free(input);
     exit(0);
 }
-void   ft_echo(t_token *tokens)
+void   ft_echo(t_token *tokens, char **newenvp)
 {
     int check;
     int i;
@@ -44,13 +44,14 @@ void   ft_echo(t_token *tokens)
         if(ft_strncmp(tokens->value, "$", 1) == 0)
         {
     
-            while(env_vars[i])
+            while(newenvp[i])
             {
-                ft_strncmp(env_vars[i], tokens->value+1, ft_strlen(tokens->value) == 0);
+                printf("%s \n %s \n", tokens->value, newenvp[i]);
+                if(ft_strncmp(newenvp[i], tokens->value+1, ft_strlen(tokens->value)) == 0)
                 {
                  
 
-                        printf("%s", ft_strchr(env_vars[i], '=')+1);
+                        printf("%s", ft_strchr(newenvp[i], '=')+1);
                 }
                 i++;
             }

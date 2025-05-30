@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/07 15:17:58 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:45:55 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "minishell.h"
+
 
 
 #include <unistd.h>
+#include "minishell.h"
 
 void ft_cat_builtin(void)
 {
@@ -43,7 +44,7 @@ static int check_pipes(t_token *tokens)
 }
 #include <sys/wait.h>
 
-void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2])
+void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2], char **newenvp)
 {
     pid_t pid = fork();
 
@@ -54,7 +55,7 @@ void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2])
         dup2(pipe_fd[1], STDOUT_FILENO); // redireciona stdout
         close(pipe_fd[1]); // fecha após redirecionar
 
-        ft_echo(tokens); // executa o builtin
+        ft_echo(tokens, newenvp); // executa o builtin
         exit(0);
     }
     else
@@ -65,37 +66,10 @@ void executor_echo_with_pipe(t_token *tokens, int pipe_fd[2])
     }
 }
 
-// void executor( t_token *tokens, char *path_name, char *input)
-// {
-//     int pipe_fd[2];
-//     pipe(pipe_fd);
-
-//     if(ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
-//       ft_exit(tokens, input);
-//     if(ft_strncmp(tokens->value, "echo", 4) == 0)
-//     {
-//         if(check_pipes(tokens) == 1)
-//             executor_echo_with_pipe(tokens, pipe_fd);
-//         else
-//             ft_echo(tokens);
-//     }
-//     if(ft_strncmp(tokens->value, "pwd", 3) == 0)
-//         ft_pwd();
-//     if(ft_strncmp(tokens->value, "cd", 2) == 0)
-//         ft_cd(tokens, path_name);
-//     if(ft_strncmp(tokens->value, "export", 6) == 0)
-//         ft_export(tokens);
-//     if(ft_strncmp(tokens->value, "unset", 5) == 0)
-//         ft_unset(tokens);
-//     if(ft_strncmp(tokens->value, "env", 3) == 0)
-//         ft_env();
-//     if(ft_strncmp(tokens->value, "cat", 3) == 0)
-//         ft_cat_builtin();
-// }
 
 
 
-void executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
+int executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
 {
     int pipe_fd[2];
     int has_pipe = check_pipes(tokens);
@@ -112,7 +86,7 @@ void executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
             close(pipe_fd[0]); // fecha leitura
             dup2(pipe_fd[1], STDOUT_FILENO);
             close(pipe_fd[1]);
-            ft_echo(tokens);
+            ft_echo(tokens, *new_envp);
             exit(0);
         }
 
@@ -132,25 +106,25 @@ void executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
         close(pipe_fd[1]);
         waitpid(pid1, NULL, 0);
         waitpid(pid2, NULL, 0);
-        return;
+        return(1);
     }
 
     // Casos sem pipe
     if (ft_strncmp(tokens->value, "echo", 4) == 0)
-        ft_echo(tokens);
-    if (ft_strncmp(tokens->value, "pwd", 3) == 0)
+        ft_echo(tokens, *new_envp);
+    else if (ft_strncmp(tokens->value, "pwd", 3) == 0)
         ft_pwd();
-    if (ft_strncmp(tokens->value, "cd", 2) == 0)
+    else if (ft_strncmp(tokens->value, "cd", 2) == 0)
         ft_cd(tokens, path_name, new_envp);
-    if (ft_strncmp(tokens->value, "export", 6) == 0)
+    else if (ft_strncmp(tokens->value, "export", 6) == 0)
         ft_export(tokens, new_envp);
-    if (ft_strncmp(tokens->value, "unset", 5) == 0)
+    else if (ft_strncmp(tokens->value, "unset", 5) == 0)
         ft_unset(tokens, new_envp);
-    if (ft_strncmp(tokens->value, "env", 3) == 0)
+    else if (ft_strncmp(tokens->value, "env", 3) == 0)
         ft_env(*new_envp);
-    if (ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
+    else if (ft_strncmp(tokens->value, "exit", 4) == 0 && (tokens->value[4] == ' ' || tokens->value[4] == '\0'))
         ft_exit(tokens, input);
-    if (ft_strncmp(tokens->value, "cat", 3) == 0)
+    else if (ft_strncmp(tokens->value, "cat", 3) == 0)
         ft_cat_builtin();
     else
     {
@@ -158,8 +132,8 @@ void executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
 
         if (cmd_path)
         {
-            execve(cmd_path, tokens->value, *new_envp); // args_array: tipo char*[], como { "ls", "-l", NULL }
-            perror("execve"); // Se falhar
+            execve(cmd_path, &tokens->value, *new_envp);
+            perror("execve");
             exit(1);
         }
         else
@@ -169,4 +143,5 @@ void executor(t_token *tokens, char *path_name, char *input, char ***new_envp)
         }
 
     }
+    return(0);
 }

@@ -5,7 +5,7 @@ SRCS = parser.c executor.c builtins.c signals.c main.c lexer.c
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g3 -g
+CFLAGS = -Wall -Wextra -Werror -g
 LIBS = -lreadline
 
 all: $(NAME)

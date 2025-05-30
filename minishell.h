@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/04/11 16:57:58 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/29 16:20:13 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@
 	char	*get_quoted_word(const char *line, int *i, char quote);
 	void	add_token(t_token **head, t_token *new_token);
 	t_token	*create_token(t_token_type type, const char *value);
-	void	ft_echo(t_token *tokens);
+	void	ft_echo(t_token *tokens, char **newenvp);
 	void	print_tokens(t_token *tokens);
 	void ft_exit(t_token *tokens, char *input);
 	void ft_pwd();
@@ -62,7 +62,7 @@
 	void ft_unset(t_token *token, char ***new_envp);
 	void create_env_arr(char ***env_vars);
 	void ft_env(char **env_copy);//remove after test
-	void executor(t_token *tokens, char *path_name, char *input, char ***envp);
+	int executor(t_token *tokens, char *path_name, char *input, char ***envp);
 	void ft_cat_builtin(void);
 	int set_env_var(char ***env, const char *key, const char *value);
 	char **dup_env(char **envp);
