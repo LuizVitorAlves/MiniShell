@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/05 17:33:41 by lalves-d          #+#    #+#             */
+/*   Updated: 2025/06/05 17:35:00 by lalves-d@st      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <errno.h>
 #include <limits.h>
@@ -19,7 +31,7 @@ static int	old_pwd_home(char *current_pwd_buffer, char **old_pwd_val,
 		}
 	}
 	if (!cmd_info->args[1] || (cmd_info->args[1][0] == '~'
-			&& cmd_info->args[1][1] == '\0'))
+		&& cmd_info->args[1][1] == '\0'))
 	{
 		*target_path = getenv("HOME");
 		if (!(*target_path))
@@ -59,6 +71,7 @@ static char	*back_dir_many_args(t_command *cmd_info, char *old_pwd_val)
 	}
 	return (target_path);
 }
+
 static int	set_oldpwd(char *old_pwd_val, char **envp)
 {
 	if (old_pwd_val)
@@ -73,10 +86,11 @@ static int	set_oldpwd(char *old_pwd_val, char **envp)
 	}
 	return (0);
 }
+
 int	ft_cd(t_command *cmd_info, char ***envp)
 {
 	char	*target_path;
-	char	current_pwd_buffer[PATH_MAX];
+	char	current_pwd_buffer[1024];
 	char	*old_pwd_val;
 
 	old_pwd_val = NULL;

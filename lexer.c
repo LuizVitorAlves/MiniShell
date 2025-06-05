@@ -1,4 +1,63 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/04 22:45:37 by lalves-d          #+#    #+#             */
+/*   Updated: 2025/06/05 18:04:53 by lalves-d         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
+
+static int	process_double_char_ops(const char *line, int *i,
+		t_token_type *type_out, char **op_str_out)
+{
+	if (line[*i] == '<' && line[*i + 1] == '<')
+	{
+		*type_out = TOKEN_HEREDOC;
+		*op_str_out = "<<";
+		*i += 2;
+		return (1);
+	}
+	else if (line[*i] == '>' && line[*i + 1] == '>')
+	{
+		*type_out = TOKEN_APPEND;
+		*op_str_out = ">>";
+		*i += 2;
+		return (1);
+	}
+	return (0);
+}
+
+static int	process_single_char_ops(const char *line, int *i,
+		t_token_type *type_out, char **op_str_out)
+{
+	if (line[*i] == '<')
+	{
+		*type_out = TOKEN_REDIR_IN;
+		*op_str_out = "<";
+		*i += 1;
+		return (1);
+	}
+	else if (line[*i] == '>')
+	{
+		*type_out = TOKEN_REDIR_OUT;
+		*op_str_out = ">";
+		*i += 1;
+		return (1);
+	}
+	else if (line[*i] == '|')
+	{
+		*type_out = TOKEN_PIPE;
+		*op_str_out = "|";
+		*i += 1;
+		return (1);
+	}
+	return (0);
+}
 
 static void	handle_operator(const char *line, int *i, t_token **head)
 {
@@ -6,42 +65,16 @@ static void	handle_operator(const char *line, int *i, t_token **head)
 	t_token_type	type;
 
 	op_str = NULL;
-	if (line[*i] == '<' && line[*i + 1] == '<')
-		{type = TOKEN_HEREDOC; op_str = "<<"; *i += 2;}
-	else if (line[*i] == '>' && line[*i + 1] == '>')
-		{type = TOKEN_APPEND; op_str = ">>"; *i += 2;}
-	else if (line[*i] == '<')
-		{type = TOKEN_REDIR_IN; op_str = "<"; *i += 1;}
-	else if (line[*i] == '>')
-		{type = TOKEN_REDIR_OUT; op_str = ">"; *i += 1;}
-	else if (line[*i] == '|')
-		{type = TOKEN_PIPE; op_str = "|"; *i += 1;}
+	if (process_double_char_ops(line, i, &type, &op_str))
+	{
+	}
+	else if (process_single_char_ops(line, i, &type, &op_str))
+	{
+	}
 	if (op_str)
+	{
 		add_token(head, create_token(type, op_str));
-}
-
-static char	*get_word(const char *line, int *i)
-{
-	t_builder	builder;
-	int			success;
-
-	builder_init(&builder);
-	success = 1;
-	while (success && line[*i] && !ft_isspace(line[*i]) \
-		&& !ft_strchr("|<>", line[*i]))
-	{
-		if (line[*i] == '\'' || line[*i] == '\"')
-			success = get_quoted_part(line, i, &builder);
-		else
-			get_unquoted_part(line, i, &builder);
 	}
-	if (!success)
-	{
-		builder_destroy(&builder);
-		exit_status(1);
-		return (NULL);
-	}
-	return (builder_finalize(&builder));
 }
 
 static int	process_token(const char *line, int *i, t_token **head)

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/05 17:26:48 by lalves-d          #+#    #+#             */
+/*   Updated: 2025/06/05 17:29:15 by lalves-d@st      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <errno.h>
 #include <limits.h>
@@ -6,50 +18,12 @@
 #include <string.h>
 #include <unistd.h>
 
-void exit_aux(t_command *cmd_info, int i)
+static void	echo_aux(t_command *cmd_info, int *i, int all_n, int *newline)
 {
-    	while (cmd_info->args[1][i])
-		{
-			if (!ft_isdigit(cmd_info->args[1][i]))
-			{
-				 fprintf(stderr, "minishell: exit: "
-                "%s: numeric argument required\n", cmd_info->args[1]);
-
-				exit(255);
-			}
-			i++;
-		}
-}
-int	ft_exit(t_command *cmd_info)
-{
-	int		exit_code;
-	long	code_val;
-	int		i;
-
-	exit_code = 0;
-	i = 0;
-	if (cmd_info->args[1])
-	{
-		if (cmd_info->args[1][0] == '-' || cmd_info->args[1][0] == '+')
-			i++;
-        exit_aux(cmd_info, i);
-		if (cmd_info->args[2])
-		{
-			fprintf(stderr, "minishell: exit: too many arguments\n");
-			return (1);
-		}
-		code_val = ft_atol(cmd_info->args[1]);
-		exit_code = (int)(code_val & 0xFF);
-	}
-	exit(exit_code);
-}
-
-static void echo_aux(t_command *cmd_info, int *i, int all_n, int *newline)
-{
-	int j;
+	int	j;
 
 	j = 0;
-		while (cmd_info->args[*i] && ft_strncmp(cmd_info->args[*i], "-n", 2) == 0)
+	while (cmd_info->args[*i] && ft_strncmp(cmd_info->args[*i], "-n", 2) == 0)
 	{
 		j = 1;
 		all_n = 1;
@@ -76,7 +50,6 @@ int	ft_echo(t_command *cmd_info)
 {
 	int	i;
 	int	newline;
-
 	int	all_n;
 
 	all_n = 0;
@@ -97,7 +70,7 @@ int	ft_echo(t_command *cmd_info)
 
 int	ft_pwd(t_command *cmd_info)
 {
-	char	buffer[PATH_MAX];
+	char	buffer[1024];
 
 	(void)cmd_info;
 	if (getcwd(buffer, sizeof(buffer)) != NULL)
@@ -110,7 +83,6 @@ int	ft_pwd(t_command *cmd_info)
 	}
 	return (0);
 }
-
 
 int	ft_env(t_command *cmd_info, char **envp_copy)
 {
@@ -133,6 +105,3 @@ int	ft_env(t_command *cmd_info, char **envp_copy)
 	}
 	return (0);
 }
-
-
-

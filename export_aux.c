@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_aux.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/05 17:47:29 by lalves-d          #+#    #+#             */
+/*   Updated: 2025/06/05 18:24:56 by lalves-d@st      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
- char	**bublesort(char **new_envp)
+char	**bublesort(char **new_envp)
 {
 	int		i;
 	int		j;
@@ -29,16 +41,18 @@
 	return (new_envp);
 }
 
- int	is_valid_var_name(const char *name, int len)
+int	is_valid_var_name(const char *name, int len)
 {
 	int	i;
 
 	if (len == 0 || (!ft_isalpha(name[0]) && name[0] != '_'))
 		return (0);
-	for (i = 1; i < len; i++)
+	i = 0;
+	while (i < len)
 	{
 		if (!ft_isalnum(name[i]) && name[i] != '_')
 			return (0);
+		i++;
 	}
 	return (1);
 }
