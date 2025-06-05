@@ -6,30 +6,12 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:41:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/04 22:37:19 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/05 07:22:07 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	handle_redirection(t_command *cmd, t_token **curr)
-{
-	t_redir	*redir;
-
-	if (!*curr || !(*curr)->next)
-		return (0);
-	redir = malloc(sizeof(t_redir));
-	if (!redir)
-		return (0);
-	redir->type = (*curr)->type;
-	redir->file = ft_strdup((*curr)->next->value);
-	if (!redir->file)
-		return (free(redir), 0);
-	redir->next = cmd->redirs;
-	cmd->redirs = redir;
-	*curr = (*curr)->next->next;
-	return (1);
-}
 int	init_command_node(t_node **node, t_command **cmd, char ***args)
 {
 	*node = malloc(sizeof(t_node));
@@ -44,8 +26,8 @@ int	init_command_node(t_node **node, t_command **cmd, char ***args)
 	return (1);
 }
 
-int	attach_redirection_or_arg(t_command *cmd, t_token **curr,
-			char **args, int *argc)
+int	attach_redirection_or_arg(t_command *cmd, t_token **curr, char **args,
+		int *argc)
 {
 	if ((*curr)->type == TOKEN_WORD)
 	{

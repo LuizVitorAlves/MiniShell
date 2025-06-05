@@ -6,21 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:43 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/31 11:48:07 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/04 22:39:22 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*char    **put_args_array(char *input)
-{
-    char    **args;
-   
-    printf("%s \n", input);
-
-    args = ft_split(input, ' ');
-    return(args);
-}*/
 
 t_node	*parse_command(t_token **tokens)
 {
@@ -37,7 +27,7 @@ t_node	*parse_command(t_token **tokens)
 	while (curr && curr->type != TOKEN_PIPE && curr->type != TOKEN_EOF)
 	{
 		if (!attach_redirection_or_arg(cmd, &curr, args, &argc))
-    		return (free(args), free_command(cmd), free(node), NULL);
+			return (free(args), free_command(cmd), free(node), NULL);
 	}
 	fill_command_args(cmd, args, argc);
 	node->command = cmd;

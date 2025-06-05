@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 03:57:32 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/05 07:21:18 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,14 @@
         t_command       *command;
     }   t_node;
 
+	typedef struct s_redir_context {
+    int *status_code_ptr;
+    int *o_stdin_local_ptr;
+    int *o_stdout_local_ptr;
+    int *saved_fds_stdin_ptr;  // Aponta para saved_fds_arr[0]
+    int *saved_fds_stdout_ptr; // Aponta para saved_fds_arr[1]
+	} t_redir_context;
+	
 	//exec_utils.c
 	int ft_strcmp(const char *s1, const char *s2);
 	long ft_atol(const char *str);

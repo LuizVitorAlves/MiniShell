@@ -104,9 +104,6 @@ int set_env_var(char ***env, const char *key, const char *value)
     return 0;
 }
 
-
-
-
 //copia as variaveis de ambiente
 char **dup_env(char **envp)
 {

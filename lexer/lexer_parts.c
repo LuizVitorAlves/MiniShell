@@ -1,37 +1,18 @@
-#include "minishell.h"
-char **get_all_env(char **envp)
-{
-	static char **env;
-	if(envp)
-		env = envp;
-	return(env);
-}
-char *my_get_env(char *name)
-{
-	char **new_env;
-	int i;
-	char *result;
-	char **new_env_token;
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_parts.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/04 22:49:53 by lalves-d          #+#    #+#             */
+/*   Updated: 2025/06/05 00:53:57 by lalves-d@st      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-	result = "\0";
-	i = 0;
-	new_env = get_all_env(NULL);
-	while(new_env[i])
-	{
-		new_env_token=ft_split(new_env[i], '=');
-		if(ft_strncmp(new_env[i], name, ft_strlen(new_env_token[0])) == 0) //DAR FREE MESSA TESTE
-		{
-			result = ft_strchr(new_env[i],'=');
-			if(result && result[0])
-				result++;
-			break;
-		}
-		i++;
-	}
-	//dar free aqui
-	return(result);
-}
-static void	expand_env_var(const char *line, int *i, t_builder *builder )
+#include "minishell.h"
+
+static void	expand_env_var(const char *line, int *i, t_builder *builder)
 {
 	int		start;
 	char	*var_name;
@@ -51,14 +32,16 @@ static void	expand_env_var(const char *line, int *i, t_builder *builder )
 	if (var_value)
 		builder_append_str(builder, var_value);
 }
+
 int	exit_status(int status)
 {
-	static int new_status;
-	
-	if(status >= 0)
-		new_status =  status;
-	return(new_status);
+	static int	new_status;
+
+	if (status >= 0)
+		new_status = status;
+	return (new_status);
 }
+
 void	handle_expansion(const char *line, int *i, t_builder *builder)
 {
 	char	*var_value;
