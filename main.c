@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 19:22:40 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/05 19:35:30 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,53 +192,77 @@ void	handler_ctr_c(int sig, siginfo_t *info, void *notused)
 	}
 }
 
-int	main(int argc, char *argv[], char **envp)
+static void	setup_signals(struct sigaction *sa)
+{
+	sigemptyset(&sa->sa_mask);
+	sa->sa_flags = SA_SIGINFO;
+	sa->sa_sigaction = handler_ctr_c;
+	sigaction(SIGINT, sa, NULL);
+	sigaction(SIGQUIT, sa, NULL);
+}
+
+static void	handle_empty_or_invalid_input(char *input, t_token *tokens)
+{
+	if (!input)
+		exit(0);
+	if (!input[0] || !tokens)
+	{
+		free(input);
+		if (tokens)
+			free_tokens(tokens);
+	}
+}
+
+static void	execute_valid_command(char *input, t_token *tokens, t_node *ast,
+	char ***envp_copy)
+{
+	if (!ast)
+	{
+		free(input);
+		free_tokens(tokens);
+		return ;
+	}
+	executor(ast, envp_copy);
+	wait(NULL);
+	free_tokens(tokens);
+	free(input);
+}
+
+void	start_shell_loop(char ***envp_copy)
 {
 	char				*input;
-	t_node				*ast;
 	char				path_name[1024];
 	t_token				*tokens;
+	t_node				*ast;
 	struct sigaction	sa;
-	char				**envp_copy;
 
-	envp_copy = dup_env(envp);
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = handler_ctr_c;
-	(void)argv;
-	(void)argc;
-	get_all_env(envp_copy);
-	exit_status(0);
-	input = NULL;
 	while (1)
 	{
+		setup_signals(&sa);
 		ft_strlcpy(path_name, "minishell$ ", 12);
-		sigaction(SIGINT, &sa, NULL);
-		sigaction(SIGQUIT, &sa, NULL);
 		input = readline(path_name);
-		if (!input)
-			exit(0);
-		else
-			tokens = tokenize(input);
-		tokens = tokenize(input);
-		if (input[0])
+		if (input && input[0])
 			add_history(input);
 		tokens = tokenize(input);
 		if (!tokens)
 		{
-			free(input);
+			handle_empty_or_invalid_input(input, tokens);
 			continue ;
 		}
 		ast = parse_line(&tokens);
-		if (!ast)
-		{
-			free(input);
-			free_tokens(tokens);
-			continue ;
-		}
-		executor(ast, &envp_copy);
-		wait(NULL);
-		free_tokens(tokens);
-		free(input);
+		execute_valid_command(input, tokens, ast, envp_copy);
 	}
+}
+
+int	main(int argc, char *argv[], char **envp)
+{
+	char	**envp_copy;
+
+	(void)argc;
+	(void)argv;
+	envp_copy = dup_env(envp);
+	get_all_env(envp_copy);
+	exit_status(0);
+	start_shell_loop(&envp_copy);
+	return (0);
 }
