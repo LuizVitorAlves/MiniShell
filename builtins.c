@@ -6,6 +6,33 @@
 #include <errno.h>
 #include "minishell.h"
 
+static char **bublesort( char **new_envp)
+{
+    int i;
+    int j;
+    char *swap;
+    int cont = 0;
+
+    j = 0;
+    while(new_envp[j])
+    {
+        i = 0;
+        while(new_envp[i])
+        {
+            if (ft_strncmp(new_envp[j], new_envp[i], ft_strlen(new_envp[j])) < 0)
+            {
+                swap = new_envp[j];
+                new_envp[j] =  new_envp[i];
+                new_envp[i] =  swap;
+            }
+            i++;
+            cont++;
+        }
+        j++;
+    }   
+    return(new_envp);
+}
+
 static int is_valid_var_name(const char *name, int len)
 {
     int i;
@@ -23,24 +50,27 @@ static void print_export_env(char **envp)
 {
     int i = 0;
     char *eq_pos;
-    while (envp && envp[i])
+    char **temp;
+
+    temp = bublesort(envp);
+    while (temp && temp[i])
     {
         printf("declare -x ");
-        eq_pos = ft_strchr(envp[i], '=');
+        eq_pos = ft_strchr(temp[i], '=');
         if (eq_pos)
         {
-            printf("%.*s", (int)(eq_pos - envp[i]), envp[i]);
+            printf("%.*s", (int)(eq_pos - temp[i]), temp[i]);
             printf("=\"%s\"\n", eq_pos + 1);
         }
         else
         {
-            printf("%s\n", envp[i]);
+            printf("%s\n", temp[i]);
         }
         i++;
     }
 }
 //arrumar esta merda
-void ft_exit(t_command *cmd_info)
+int ft_exit(t_command *cmd_info)
 {
     int exit_code = 0; 
     long code_val;
@@ -63,7 +93,7 @@ void ft_exit(t_command *cmd_info)
         if (cmd_info->args[2]) 
         {
             fprintf(stderr, "minishell: exit: too many arguments\n");
-            return; 
+            return(1); 
         }
         
         code_val = ft_atol(cmd_info->args[1]);
@@ -72,7 +102,7 @@ void ft_exit(t_command *cmd_info)
     exit(exit_code);
 }
 
-void ft_echo(t_command *cmd_info)
+int ft_echo(t_command *cmd_info)
 {
     int i = 1;
     int newline = 1;
@@ -99,6 +129,7 @@ void ft_echo(t_command *cmd_info)
         } else {
             break; 
         }
+        
     }
     
     while (cmd_info->args[i])
@@ -115,9 +146,10 @@ void ft_echo(t_command *cmd_info)
     {
         printf("\n");
     }
+    return(0);
 }
 
-void ft_pwd(t_command *cmd_info)
+int ft_pwd(t_command *cmd_info)
 {
     char buffer[PATH_MAX];
 
@@ -131,6 +163,7 @@ void ft_pwd(t_command *cmd_info)
     {
         perror("minishell: pwd");
     }
+    return(0);
 }
 
 int ft_cd(t_command *cmd_info, char ***envp)
@@ -184,7 +217,7 @@ int ft_cd(t_command *cmd_info, char ***envp)
     {
         fprintf(stderr, "minishell: cd: %s: %s\n", target_path, strerror(errno));
         free(old_pwd_val);
-        return (1);
+        return (errno);
     }
 
     if (getcwd(current_pwd_buffer, sizeof(current_pwd_buffer)) != NULL)
@@ -208,7 +241,8 @@ int ft_cd(t_command *cmd_info, char ***envp)
     return (0);
 }
 
-void ft_export(t_command *cmd_info, char ***new_envp)
+
+int ft_export(t_command *cmd_info, char ***new_envp)
 {
     int i = 1;
     char *arg;
@@ -221,7 +255,7 @@ void ft_export(t_command *cmd_info, char ***new_envp)
     if (!cmd_info->args[1])
     {
         print_export_env(*new_envp);
-        return;
+        return(0);
     }
 
     while ((arg = cmd_info->args[i]))
@@ -238,10 +272,13 @@ void ft_export(t_command *cmd_info, char ***new_envp)
                 continue;
             }
             name = ft_strndup(arg, name_len);
-            if (!name) { export_status = 1; i++; continue; }
-            
+            if (!name) 
+            {
+                 export_status = 1;
+                  i++; 
+                  continue; 
+            }
             value = eq_pos + 1;
-
             if (!is_valid_var_name(name, name_len))
             {
                 fprintf(stderr, "minishell: export: `%s': not a valid identifier\n", arg);
@@ -266,17 +303,21 @@ void ft_export(t_command *cmd_info, char ***new_envp)
             }
         }
         i++;
+
     }
+        get_all_env((*new_envp));
+        return(export_status);
+
 }
 
-void ft_env(t_command *cmd_info, char **envp_copy)
+int ft_env(t_command *cmd_info, char **envp_copy)
 {
     int i = 0;
 
     if (cmd_info->args[1])
     {
         fprintf(stderr, "env: '%s': No such file or directory\n", cmd_info->args[1]);
-        return;
+        return(1);
     }
 
     while (envp_copy && envp_copy[i])
@@ -287,9 +328,10 @@ void ft_env(t_command *cmd_info, char **envp_copy)
         }
         i++;
     }
+    return(0);
 }
 
-void ft_unset(t_command *cmd_info, char ***new_envp)
+int ft_unset(t_command *cmd_info, char ***new_envp)
 {
     int i = 1; 
     char *arg_to_unset;
@@ -329,4 +371,7 @@ void ft_unset(t_command *cmd_info, char ***new_envp)
         }
         i++; 
     }
+        get_all_env((*new_envp));
+        return(unset_status);
+
 }

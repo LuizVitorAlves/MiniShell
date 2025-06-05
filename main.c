@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
-
+#include <wait.h>
 
 char **env_vars = NULL;
 
@@ -56,7 +55,7 @@ char **env_vars = NULL;
 //         i++;
 //     }
 
-//     free_split(paths); // Libere a matriz criada por ft_split
+//     free_split(paths); if (access(full_path, X_OK) == 0)// Libere a matriz criada por ft_split
 //     return NULL; // Comando não encontrado
 // }
 
@@ -71,6 +70,10 @@ char *get_cmd_path(char *cmd, char **envp)
     char *full_path;
     size_t buffer_size;
 
+    if (access(cmd, X_OK) == 0)
+    {
+        return(ft_strdup(cmd));
+    }
     // Busca a variável PATH no envp
     while (envp[i])
     {
@@ -256,14 +259,19 @@ void	handler_sa_quit(int sig)
     write(STDOUT_FILENO, "", 1); // pular linha        // informa que estamos em uma nova linha
     rl_redisplay();   
 }
-void	handler_ctr_c(int sig)
+void	handler_ctr_c(int sig, siginfo_t *info, void *notused)
 {
-	(void) sig;
+	(void) notused;
+    if (sig == SIGINT) {
 
-	rl_replace_line("", 0);     // limpa o conteúdo da linha atual
-    write(STDOUT_FILENO, "\n", 1); // pular linha
-    rl_on_new_line();           // informa que estamos em uma nova linha
-    rl_redisplay();             // reexibe o prompt
+        rl_replace_line("", 0);     // limpa o conteúdo da linha atual
+        write(STDOUT_FILENO, "\n", 1); // pular linha
+        rl_on_new_line();           // informa que estamos em uma nova linha
+        if (info->si_uid)
+            rl_redisplay();             // reexibe o prompt
+    }
+    else if (sig == SIGQUIT)
+        return;
 }
 
 static void	print_ast(t_node *node, int level)
@@ -302,20 +310,24 @@ int main(int argc, char *argv[],char **envp)
 	struct sigaction sa_quit;
 	char **envp_copy = dup_env(envp);
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handler_ctr_c;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handler_ctr_c;
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
+    get_all_env(envp_copy);
+    exit_status(0);
+    input = NULL;
+    
 	//create_env_arr(&env_vars);
-    printf("começou");
 	while(1)
     {
-		ft_strlcpy(path_name, "minishell$", 11);
+		ft_strlcpy(path_name, "minishell$ ", 12);
 		
 		sigaction(SIGINT, &sa, NULL);
-		sigaction(SIGQUIT, &sa_quit, NULL);
-        input = readline(path_name);
+        sigaction(SIGQUIT, &sa, NULL);
+		//sigaction(SIGQUIT, &sa_quit, NULL);
+          input = readline(path_name);
         if(!input)
             exit(0);
         else
@@ -341,13 +353,15 @@ int main(int argc, char *argv[],char **envp)
 			continue ;
 		}
 
-        // (Apagar dps) Imprime a árvore para ver se tudo funcionou
+        //(Apagar dps) Imprime a árvore para ver se tudo funcionou
 		printf("--- AST Gerada ---\n");
 		print_ast(ast, 0);
 		printf("--------------------\n");
         
         executor(ast, &envp_copy);
+        wait(NULL);
 		free_tokens(tokens);
         free(input);
+       
     }
 }

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
+#include<wait.h>
 
 
 char **env_vars = NULL;
@@ -56,7 +56,7 @@ char **env_vars = NULL;
 //         i++;
 //     }
 
-//     free_split(paths); // Libere a matriz criada por ft_split
+//     free_split(paths); if (access(full_path, X_OK) == 0)// Libere a matriz criada por ft_split
 //     return NULL; // Comando não encontrado
 // }
 
@@ -71,6 +71,10 @@ char *get_cmd_path(char *cmd, char **envp)
     char *full_path;
     size_t buffer_size;
 
+    if (access(cmd, X_OK) == 0)
+    {
+        return(ft_strdup(cmd));
+    }
     // Busca a variável PATH no envp
     while (envp[i])
     {
@@ -292,8 +296,8 @@ static void	print_ast(t_node *node, int level)
 
 int main(int argc, char *argv[],char **envp)
 {
-    // char	*input;
-    char input[]="./minishell";
+    char	input[] = "cat";
+    // char input[]="export oi=teste";
     t_node		*ast;
     // char input[]="echo $MAIL";
 	char	path_name[1024];
@@ -307,17 +311,21 @@ int main(int argc, char *argv[],char **envp)
 	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
+    get_all_env(envp_copy);
+    exit_status(0);
+    input = NULL;
+    
 	//create_env_arr(&env_vars);
 	while(1)
     {
-		ft_strlcpy(path_name, "minishell$", 11);
+		ft_strlcpy(path_name, "minishell$ ", 12);
 		
 		sigaction(SIGINT, &sa, NULL);
 		sigaction(SIGQUIT, &sa_quit, NULL);
-        // input = readline(path_name);
-        // if(!input)
-        //     exit(0);
-        // else
+          input = readline(path_name);
+        if(!input)
+            exit(0);
+        else
 			tokens = tokenize(input);
         tokens = tokenize(input);
         if (input[0])
@@ -327,7 +335,7 @@ int main(int argc, char *argv[],char **envp)
 		tokens = tokenize(input);
 		if (!tokens)
 		{
-			// free(input);
+			free(input);
 			continue ;
 		}
 		
@@ -335,7 +343,7 @@ int main(int argc, char *argv[],char **envp)
 		ast = parse_line(&tokens);
 		if (!ast)
 		{
-			// free(input);
+			free(input);
 			free_tokens(tokens);
 			continue ;
 		}
@@ -346,7 +354,9 @@ int main(int argc, char *argv[],char **envp)
 		printf("--------------------\n");
         
         executor(ast, &envp_copy);
+        wait(NULL);
 		free_tokens(tokens);
-        // free(input);
+        free(input);
+       
     }
 }

@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/30 01:00:40 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/04 20:38:05 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 	#include <signal.h>
     #include "libft/libft.h"
 	#include <limits.h> //tirar
+	
 	typedef enum e_token_type
 	{
 		TOKEN_WORD,
@@ -96,32 +97,32 @@
 	void	add_token(t_token **head, t_token *new_token);
 	t_token	*create_token(t_token_type type, const char *value);*/
 	// void	ft_echo(t_token *tokens, char **newenvp);
-	void ft_echo(t_command *cmd_info);
+	int ft_echo(t_command *cmd_info);
 	int ft_cd(t_command *cmd_info, char ***envp);
 
 	void	print_tokens(t_token *tokens);
 	// void ft_exit(t_token *tokens, char *input);
-	void ft_exit(t_command *cmd_info);
+	int ft_exit(t_command *cmd_info);
 
-	void ft_pwd();
+	int ft_pwd();
 	char *get_cmd_path(char  *tokens, char **new_envp);
 	//int ft_cd(t_token *tokens, char *path_name);
 	// int ft_cd(t_token *tokens, char *path_name, char ***envp);
 
 	// void ft_export(t_token *token, char ***new_envp);
-	void ft_export(t_command *cmd_info, char ***new_envp);
+	int ft_export(t_command *cmd_info, char ***new_envp);
 
 	// void ft_unset(t_token *token, char ***new_envp);
-	void ft_unset(t_command *cmd_info, char ***new_envp);
+	int ft_unset(t_command *cmd_info, char ***new_envp);
 
 	void create_env_arr(char ***env_vars);
 	// void ft_env(char **new_envp);//remove after test
-	void ft_env(t_command *cmd_info, char **envp_copy);
+	int ft_env(t_command *cmd_info, char **envp_copy);
 
 	char    **put_args_array(char *input);
 	extern char **env_vars;
 	int set_env_var(char ***env, const char *key, const char *value);
-	// int executor(t_token *tokens, char *path_name, char *input, char ***new_envp);
+	// int executor(t_token *t okens, char *path_name, char *input, char ***new_envp);
 	int executor(t_node *node, char ***new_envp);
 
 	//Lexer.c
@@ -163,5 +164,18 @@
 			char **args, int *argc);
 	void	fill_command_args(t_command *cmd, char **args, int argc);
 	t_node	*create_pipe_node(t_node *left, t_token **tokens);
+
+	//redirects
+	void restore_fds(int saved_fds[2]);
+	int handle_redirections(t_redir *redirs, int saved_fds[2]);
+
+
+
+
+	int	exit_status(int status);
+
+	char **get_all_env(char **envp);
+
+
 	
 #endif

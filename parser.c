@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:43 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/30 00:01:49 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/05/31 11:48:07 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ t_node	*parse_line(t_token **tokens)
 	if (!node)
 	{
 		ft_putstr_fd("syntax error\n", STDERR_FILENO);
+		exit_status(2);
 		return (NULL);
 	}
 	return (node);

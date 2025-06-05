@@ -1,6 +1,37 @@
 #include "minishell.h"
+char **get_all_env(char **envp)
+{
+	static char **env;
+	if(envp)
+		env = envp;
+	return(env);
+}
+char *my_get_env(char *name)
+{
+	char **new_env;
+	int i;
+	char *result;
+	char **new_env_token;
 
-static void	expand_env_var(const char *line, int *i, t_builder *builder)
+	result = "\0";
+	i = 0;
+	new_env = get_all_env(NULL);
+	while(new_env[i])
+	{
+		new_env_token=ft_split(new_env[i], '=');
+		if(ft_strncmp(new_env[i], name, ft_strlen(new_env_token[0])) == 0) //DAR FREE MESSA TESTE
+		{
+			result = ft_strchr(new_env[i],'=');
+			if(result && result[0])
+				result++;
+			break;
+		}
+		i++;
+	}
+	//dar free aqui
+	return(result);
+}
+static void	expand_env_var(const char *line, int *i, t_builder *builder )
 {
 	int		start;
 	char	*var_name;
@@ -15,12 +46,19 @@ static void	expand_env_var(const char *line, int *i, t_builder *builder)
 		return ;
 	}
 	var_name = ft_substr(line, start, *i - start);
-	var_value = getenv(var_name);
+	var_value = my_get_env(var_name);
 	free(var_name);
 	if (var_value)
 		builder_append_str(builder, var_value);
 }
-
+int	exit_status(int status)
+{
+	static int new_status;
+	
+	if(status >= 0)
+		new_status =  status;
+	return(new_status);
+}
 void	handle_expansion(const char *line, int *i, t_builder *builder)
 {
 	char	*var_value;
@@ -28,7 +66,7 @@ void	handle_expansion(const char *line, int *i, t_builder *builder)
 	(*i)++;
 	if (line[*i] == '?')
 	{
-		var_value = ft_strdup("0");
+		var_value = ft_itoa(exit_status(-1));
 		builder_append_str(builder, var_value);
 		free(var_value);
 		(*i)++;

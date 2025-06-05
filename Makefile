@@ -1,11 +1,11 @@
 NAME = minishell
 LIBFT_DIR = libft
 
-SRCS = parser.c executor.c builtins.c signals.c main.c lexer.c free_parser.c parser_utils.c lexer_builder.c lexer_parts.c lexer_utils.c exec_utils.c
+SRCS = parser.c executor.c builtins.c signals.c main.c lexer.c free_parser.c parser_utils.c lexer_builder.c lexer_parts.c lexer_utils.c exec_utils.c redirects.c
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -g -Wall -Werror -Wextra
 LIBS = -lreadline
 
 all: $(NAME)

@@ -38,6 +38,7 @@ static char	*get_word(const char *line, int *i)
 	if (!success)
 	{
 		builder_destroy(&builder);
+		exit_status(1);
 		return (NULL);
 	}
 	return (builder_finalize(&builder));

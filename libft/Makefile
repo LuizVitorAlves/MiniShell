@@ -45,7 +45,7 @@ SRC_BONUS=ft_lstnew_bonus.c \
 OBJS=$(SRC:.c=.o)
 OBJS_BONUS=$(SRC_BONUS:.c=.o)
 CC=cc
-CC_FLAGS=-Wall -Wextra -Werror
+CC_FLAGS= -g -Wall -Wextra -Werror
 
 all: $(NAME)
 
