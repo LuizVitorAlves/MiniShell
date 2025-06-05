@@ -1,8 +1,11 @@
 
 #include "minishell.h"
 
-int aux_support(int name_len, char *arg, char **name, char **value, char *eq_pos)
+int aux_support(char *arg, char **name, char **value, char *eq_pos)
 {
+    int name_len;
+
+    name_len = eq_pos - arg;
     if (name_len == 0)
     {
         fprintf(stderr, "minishell: export: `%s': not a valid identifier\n", arg);
@@ -29,14 +32,12 @@ static void error_set_var(int *export_status, char *arg)
 static int export_aux_fun(char *eq_pos, char *arg, char ***new_envp)
 {
     int		export_status = 0;
-    int		name_len;
     char	*name;
     char	*value;
 
     if (eq_pos)
     {
-        name_len = eq_pos - arg;
-        if (aux_support(name_len, arg, &name, &value, eq_pos))
+        if (aux_support(arg, &name, &value, eq_pos))
             return (1);
         if (set_env_var(new_envp, name, value) != 0)
         {
