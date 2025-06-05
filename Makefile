@@ -2,22 +2,27 @@ NAME = minishell
 LIBFT_DIR = libft
 
 SRCS = \
-    parser/parser.c \
-    executor.c \
-    builtins.c \
-    signals.c \
     main.c \
-    lexer/lexer.c \
-    parser/free_parser.c \
-    parser/parser_utils.c \
+    builtins.c \
+    cd.c \
+    executor.c \
+    executor_aux.c \
+    exec_utils.c \
+    export.c \
+    export_aux.c \
+    redirects.c \
+    signals.c \
+    unset.c \
+    lexer/environment.c \
+    lexer/get_word.c \
     lexer/lexer_builder.c \
     lexer/lexer_parts.c \
     lexer/lexer_utils.c \
-    exec_utils.c \
-    redirects.c \
-    lexer/environment.c \
-    lexer/get_word.c \
-    parser/parser_redirections.c
+    lexer/lexer.c \
+    parser/free_parser.c \
+    parser/parser_redirections.c \
+    parser/parser_utils.c \
+    parser/parser.c
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
