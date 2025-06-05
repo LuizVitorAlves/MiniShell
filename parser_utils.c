@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:41:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/05/16 16:12:13 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/04 22:37:19 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ int	handle_redirection(t_command *cmd, t_token **curr)
 	*curr = (*curr)->next->next;
 	return (1);
 }
-
 int	init_command_node(t_node **node, t_command **cmd, char ***args)
 {
 	*node = malloc(sizeof(t_node));

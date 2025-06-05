@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include<wait.h>
-
+#include <wait.h>
 
 char **env_vars = NULL;
 
@@ -260,14 +259,19 @@ void	handler_sa_quit(int sig)
     write(STDOUT_FILENO, "", 1); // pular linha        // informa que estamos em uma nova linha
     rl_redisplay();   
 }
-void	handler_ctr_c(int sig)
+void	handler_ctr_c(int sig, siginfo_t *info, void *notused)
 {
-	(void) sig;
+	(void) notused;
+    if (sig == SIGINT) {
 
-	rl_replace_line("", 0);     // limpa o conteúdo da linha atual
-    write(STDOUT_FILENO, "\n", 1); // pular linha
-    rl_on_new_line();           // informa que estamos em uma nova linha
-    rl_redisplay();             // reexibe o prompt
+        rl_replace_line("", 0);     // limpa o conteúdo da linha atual
+        write(STDOUT_FILENO, "\n", 1); // pular linha
+        rl_on_new_line();           // informa que estamos em uma nova linha
+        if (info->si_uid)
+            rl_redisplay();             // reexibe o prompt
+    }
+    else if (sig == SIGQUIT)
+        return;
 }
 
 static void	print_ast(t_node *node, int level)
@@ -296,19 +300,19 @@ static void	print_ast(t_node *node, int level)
 
 int main(int argc, char *argv[],char **envp)
 {
-    char	input[] = "cat";
+    char	*input;
     // char input[]="export oi=teste";
     t_node		*ast;
     // char input[]="echo $MAIL";
 	char	path_name[1024];
     t_token    *tokens;
 	struct sigaction sa;
-	struct sigaction sa_quit;
+	// struct sigaction sa_quit;
 	char **envp_copy = dup_env(envp);
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handler_ctr_c;
-	sa_quit.sa_handler = SIG_IGN;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handler_ctr_c;
+	// sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
     get_all_env(envp_copy);
@@ -321,7 +325,8 @@ int main(int argc, char *argv[],char **envp)
 		ft_strlcpy(path_name, "minishell$ ", 12);
 		
 		sigaction(SIGINT, &sa, NULL);
-		sigaction(SIGQUIT, &sa_quit, NULL);
+        sigaction(SIGQUIT, &sa, NULL);
+		//sigaction(SIGQUIT, &sa_quit, NULL);
           input = readline(path_name);
         if(!input)
             exit(0);
@@ -348,7 +353,7 @@ int main(int argc, char *argv[],char **envp)
 			continue ;
 		}
 
-        // (Apagar dps) Imprime a árvore para ver se tudo funcionou
+        //(Apagar dps) Imprime a árvore para ver se tudo funcionou
 		printf("--- AST Gerada ---\n");
 		print_ast(ast, 0);
 		printf("--------------------\n");

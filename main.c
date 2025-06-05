@@ -7,61 +7,6 @@
 
 char **env_vars = NULL;
 
-
-// char *get_cmd_path(char *cmd, char **envp)
-// {
-//     int i = 0;
-//     char *path = NULL;
-//     char **paths = NULL;
-//     char *full_path;
-
-//     // Busca a variável PATH no envp
-//     while (envp[i])
-//     {
-//         if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-//         {
-//             path = envp[i] + 5; // Pula "PATH="
-//             break;
-//         }
-//         i++;
-//     }
-
-//     if (!path)
-//         return NULL;
-
-//     paths = ft_split(path, ':'); // Função que divide por ":"
-//     if (!paths)
-//         return NULL;
-
-//     i = 0;
-//     while (paths[i])
-//     {
-//         full_path = malloc(ft_strlen(paths[i]) + ft_strlen(cmd) + 2); // +1 para '/' e +1 para '\0'
-//         if (!full_path)
-//             break;
-
-//         ft_strcpy(full_path, paths[i]);
-//         ft_strcat(full_path, "/");
-//         ft_strcat(full_path, cmd);
-
-//         if (access(full_path, X_OK) == 0)
-//         {
-//             // Comando encontrado e executável
-//             free_split(paths);
-//             return full_path;
-//         }
-
-//         free(full_path);
-//         i++;
-//     }
-
-//     free_split(paths); if (access(full_path, X_OK) == 0)// Libere a matriz criada por ft_split
-//     return NULL; // Comando não encontrado
-// }
-
-
-
-
 char *get_cmd_path(char *cmd, char **envp)
 {
     int i = 0;
@@ -118,44 +63,6 @@ char *get_cmd_path(char *cmd, char **envp)
     return NULL;
 }
 
-
-
-//função que modifica as variaveis de ambiente 
-// int set_env_var(char ***env, const char *key, const char *value)
-// {
-//     int i = 0;
-//     size_t key_len = strlen(key);
-//     char *new_entry = malloc(strlen(key) + strlen(value) + 2); // key=value\0
-
-//     if (!new_entry)
-//         return 1;
-// 	//sprintf(new_entry, "%s=%s", key, value);
-// 	// Verifica se a variável já existe
-//     while ((*env)[i]) {
-//         if (strncmp((*env)[i], key, key_len) == 0 && (*env)[i][key_len] == '=') {
-//             free((*env)[i]);
-//             (*env)[i] = new_entry;
-//             return 0;
-//         }
-//         i++;
-//     }
-// 	// Se não encontrou, cria novo array com espaço extra
-//     char **new_env = malloc(sizeof(char *) * (i + 2));
-//     if (!new_env) {
-//         free(new_entry);
-//         return 1;
-//     }
-// 	int j = 0;
-//     while (j < i) {
-//         new_env[j] = (*env)[j];
-//         j++;
-//     }
-// 	new_env[i] = new_entry;
-//     new_env[i + 1] = NULL;
-// 	free(*env);
-//     *env = new_env;
-// 	return 0;
-// }
 int set_env_var(char ***env, const char *key, const char *value)
 {
     int i = 0;
@@ -254,6 +161,7 @@ void	print_tokens(t_token *tokens)
 
 void	handler_sa_quit(int sig)
 {
+    
 	(void) sig;
 	rl_replace_line("", 0);     // limpa o conteúdo da linha atual
     write(STDOUT_FILENO, "", 1); // pular linha        // informa que estamos em uma nova linha
@@ -271,7 +179,12 @@ void	handler_ctr_c(int sig, siginfo_t *info, void *notused)
             rl_redisplay();             // reexibe o prompt
     }
     else if (sig == SIGQUIT)
-        return;
+    {
+        rl_replace_line("", 0);
+        write(STDOUT_FILENO, "\r", 1);   // Carriage return para limpar a linha
+        rl_on_new_line();
+        rl_redisplay();   
+    }
 }
 
 static void	print_ast(t_node *node, int level)
@@ -301,32 +214,26 @@ static void	print_ast(t_node *node, int level)
 int main(int argc, char *argv[],char **envp)
 {
     char	*input;
-    // char input[]="export oi=teste";
     t_node		*ast;
-    // char input[]="echo $MAIL";
 	char	path_name[1024];
     t_token    *tokens;
 	struct sigaction sa;
-	struct sigaction sa_quit;
 	char **envp_copy = dup_env(envp);
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handler_ctr_c;
-	sa_quit.sa_handler = SIG_IGN;
 	(void )argv;
     (void )argc;
     get_all_env(envp_copy);
     exit_status(0);
     input = NULL;
     
-	//create_env_arr(&env_vars);
 	while(1)
     {
 		ft_strlcpy(path_name, "minishell$ ", 12);
 		
 		sigaction(SIGINT, &sa, NULL);
         sigaction(SIGQUIT, &sa, NULL);
-		//sigaction(SIGQUIT, &sa_quit, NULL);
           input = readline(path_name);
         if(!input)
             exit(0);
@@ -335,16 +242,12 @@ int main(int argc, char *argv[],char **envp)
         tokens = tokenize(input);
         if (input[0])
 			add_history(input);
-
-        // 2. LEXER: Transforma a string em tokens
 		tokens = tokenize(input);
 		if (!tokens)
 		{
 			free(input);
 			continue ;
 		}
-		
-		// 3. PARSER: Transforma os tokens na Árvore de Comandos (AST)
 		ast = parse_line(&tokens);
 		if (!ast)
 		{
@@ -352,16 +255,9 @@ int main(int argc, char *argv[],char **envp)
 			free_tokens(tokens);
 			continue ;
 		}
-
-        //(Apagar dps) Imprime a árvore para ver se tudo funcionou
-		printf("--- AST Gerada ---\n");
-		print_ast(ast, 0);
-		printf("--------------------\n");
-        
         executor(ast, &envp_copy);
         wait(NULL);
 		free_tokens(tokens);
         free(input);
-       
-    }
+       }
 }

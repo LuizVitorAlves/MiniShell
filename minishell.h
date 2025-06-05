@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/04 20:38:05 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/05 03:57:32 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,18 @@
 	int	exit_status(int status);
 
 	char **get_all_env(char **envp);
+
+	//export aux
+	char	**bublesort(char **new_envp);
+	int	is_valid_var_name(const char *name, int len);
+	void	print_export_env(char **envp);
+	//EXECUTOR 
+	void handle_pipe_left(t_node *node, char ***new_envp, int *pipe_fd);
+	void handle_pipe_right(t_node *node, char ***new_envp, int *pipe_fd);
+	int execute_pipe(t_node *node, char ***new_envp);
+	int execute_builtin(t_command *cmd, char ***new_envp);
+
+
 
 
 	
