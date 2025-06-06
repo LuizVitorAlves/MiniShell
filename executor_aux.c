@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_aux.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d <lalves-d@student.42.rio>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:43:11 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:43:14 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/06/06 10:36:14 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,14 @@ int	execute_pipe(t_node *node, char ***new_envp)
 	close(pipe_fd[1]);
 	wait(NULL);
 	waitpid(-1, &status, 0);
-	return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
+	if (WIFEXITED(status))
+	{
+		return (WEXITSTATUS(status));
+	}
+	else
+	{
+		return (1);
+	}
 }
 
 int	execute_builtin(t_command *cmd, char ***new_envp)

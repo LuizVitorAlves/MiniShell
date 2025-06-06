@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:07:56 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:08:23 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/06 14:22:36 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,14 @@ static int	my_heredoc(char *my_eof)
 		perror("minishell: pipe");
 		return (1);
 	}
+	input = NULL;
 	while (1)
 	{
 		input = readline("> ");
-		if (input == NULL || ft_strncmp(input, my_eof, ft_strlen(my_eof)
-				+ 1) == 0)
+		if (input == NULL)
+			break;
+
+		if (ft_strncmp(input, my_eof, ft_strlen(my_eof) + 1) == 0)
 		{
 			free(input);
 			break ;

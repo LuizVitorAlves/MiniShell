@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:46:10 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/06 14:23:55 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,16 @@ int	executor(t_node *node, char ***new_envp)
 	else if (node->type == NODE_COMMAND)
 	{
 		cmd = node->command;
-		if (!cmd || !cmd->args || !cmd->args[0])
-			return (handle_redirections(cmd->redirs, saved_fds) == -1 ? 1 : 0);
-		if (handle_redirections(cmd->redirs, saved_fds) == -1)
-			return (1);
+		//printf("%s \n", cmd->args[0]);
+		//if (!cmd || !cmd->args || !cmd->args[0])
+		//	return (handle_redirections(cmd->redirs, saved_fds) == -1 ? 1 : 0);
+		// if (handle_redirections(cmd->redirs, saved_fds) == -1)
+		// 	return (1);
+		if(cmd->args[0] == NULL)
+		{
+			restore_fds(saved_fds);
+			return (status);
+		}
 		status = execute_builtin(cmd, new_envp);
 		if (status == -1)
 			status = execute_external(cmd, new_envp);

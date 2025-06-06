@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 19:35:30 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/06 12:07:16 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wait.h>
+
+static void	print_ast(t_node *node, int level)
+{
+	int	i;
+
+	if (!node)
+		return ;
+	for (i = 0; i < level; i++)
+		printf("  ");
+	if (node->type == NODE_PIPE)
+	{
+		printf("PIPE\n");
+		print_ast(node->left, level + 1);
+		print_ast(node->right, level + 1);
+	}
+	else if (node->type == NODE_COMMAND)
+	{
+		printf("COMMAND: ");
+		i = 0;
+		while (node->command->args && node->command->args[i])
+			printf("[%s] ", node->command->args[i++]);
+		printf("\n");
+	}
+}
 
 static char	*get_cmd_path_aux(char **paths, char *cmd)
 {
@@ -250,6 +274,7 @@ void	start_shell_loop(char ***envp_copy)
 			continue ;
 		}
 		ast = parse_line(&tokens);
+		print_ast(ast, 0);
 		execute_valid_command(input, tokens, ast, envp_copy);
 	}
 }
