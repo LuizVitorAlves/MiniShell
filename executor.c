@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/06 14:23:55 by uviana-b         ###   ########.fr       */
+/*   Updated: 2025/06/06 15:25:47 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ int	executor(t_node *node, char ***new_envp)
 		//printf("%s \n", cmd->args[0]);
 		//if (!cmd || !cmd->args || !cmd->args[0])
 		//	return (handle_redirections(cmd->redirs, saved_fds) == -1 ? 1 : 0);
-		// if (handle_redirections(cmd->redirs, saved_fds) == -1)
-		// 	return (1);
+		if (handle_redirections(cmd->redirs, saved_fds) == -1)
+			return (1);
 		if(cmd->args[0] == NULL)
 		{
 			restore_fds(saved_fds);
@@ -92,4 +92,5 @@ int	executor(t_node *node, char ***new_envp)
 	}
 	exit_status(status);
 	return (status);
+		// =============================================================
 }

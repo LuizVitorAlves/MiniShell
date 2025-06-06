@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:35:08 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/06 14:51:07 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,5 +193,8 @@ int					execute_builtin(t_command *cmd, char ***new_envp);
 int					handle_redirection(t_command *cmd, t_token **curr);
 char				*get_word(const char *line, int *i);
 char				*my_get_env(char *name);
+
+int	is_output_redir(int type);
+int	is_input_redir(int type);
 
 #endif

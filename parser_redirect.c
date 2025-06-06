@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 01:34:58 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:05:55 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/06 14:50:18 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,31 @@ static void	append_redir_to_list(t_command *cmd, t_redir *redir_node)
 	}
 }
 
+static void	remove_old_redir_by_type(t_command *cmd, int new_redir_type)
+{
+	t_redir	**tracer;
+	t_redir	*current;
+	t_redir	*to_delete;
+	int		is_new_input;
+
+	is_new_input = is_input_redir(new_redir_type);
+	tracer = &cmd->redirs;
+	while (*tracer)
+	{
+		current = *tracer;
+		if ((is_new_input && is_input_redir(current->type))
+			|| (!is_new_input && is_output_redir(current->type)))
+		{
+			to_delete = current;
+			*tracer = current->next;
+			free(to_delete->file);
+			free(to_delete);
+		}
+		else
+			tracer = &(*tracer)->next;
+	}
+}
+
 int	handle_redirection(t_command *cmd, t_token **curr)
 {
 	t_redir	*new_redir;
@@ -62,9 +87,8 @@ int	handle_redirection(t_command *cmd, t_token **curr)
 	}
 	new_redir = create_redir_node_from_token(*curr);
 	if (!new_redir)
-	{
 		return (0);
-	}
+	remove_old_redir_by_type(cmd, new_redir->type);
 	append_redir_to_list(cmd, new_redir);
 	*curr = (*curr)->next->next;
 	return (1);
