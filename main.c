@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <wait.h>
 
-static void	print_ast(t_node *node, int level)
+/*static void	print_ast(t_node *node, int level)
 {
 	int	i;
 
@@ -39,7 +39,7 @@ static void	print_ast(t_node *node, int level)
 			printf("[%s] ", node->command->args[i++]);
 		printf("\n");
 	}
-}
+}*/
 
 static char	*get_cmd_path_aux(char **paths, char *cmd)
 {
@@ -265,6 +265,34 @@ void	start_shell_loop(char ***envp_copy)
 		setup_signals(&sa);
 		ft_strlcpy(path_name, "minishell$ ", 12);
 		input = readline(path_name);
+		if (!input)
+			exit(exit_status(-1));
+		if (input && input[0])
+			add_history(input);
+		tokens = tokenize(input);
+		if (!tokens)
+		{
+			handle_empty_or_invalid_input(input, tokens);
+			continue ;
+		}
+		ast = parse_line(&tokens);
+		execute_valid_command(input, tokens, ast, envp_copy);
+	}
+}
+
+/*void	start_shell_loop(char ***envp_copy)
+{
+	char				*input;
+	char				path_name[1024];
+	t_token				*tokens;
+	t_node				*ast;
+	struct sigaction	sa;
+
+	while (1)
+	{
+		setup_signals(&sa);
+		ft_strlcpy(path_name, "minishell$ ", 12);
+		input = readline(path_name);
 		if (input && input[0])
 			add_history(input);
 		tokens = tokenize(input);
@@ -277,7 +305,7 @@ void	start_shell_loop(char ***envp_copy)
 		print_ast(ast, 0);
 		execute_valid_command(input, tokens, ast, envp_copy);
 	}
-}
+}*/
 
 int	main(int argc, char *argv[], char **envp)
 {

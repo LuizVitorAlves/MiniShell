@@ -172,8 +172,8 @@ t_node				*create_pipe_node(t_node *left, t_token **tokens);
 
 // redirects
 void				restore_fds(int saved_fds[2]);
-int					handle_redirections(t_redir *redirs, int saved_fds[2]);
-
+//int					handle_redirections(t_redir *redirs, int saved_fds[2]);
+int	handle_redirections(t_redir *redir, int saved_fds[2]);
 int					exit_status(int status);
 
 char				**get_all_env(char **envp);

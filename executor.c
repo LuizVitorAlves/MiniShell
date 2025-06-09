@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/06 15:25:47 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/07 15:28:00 by lalves-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,16 @@
 static void	child_external_exec(t_command *cmd, char ***new_envp)
 {
 	char	*cmd_path;
+	int		saved_fds[2];
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+
+	saved_fds[0] = -1;
+	saved_fds[1] = -1;
+	if (handle_redirections(cmd->redirs, saved_fds) == -1)
+		exit(1);
+
 	cmd_path = get_cmd_path(cmd->args[0], *new_envp);
 	if (cmd_path)
 	{
@@ -75,22 +82,17 @@ int	executor(t_node *node, char ***new_envp)
 	else if (node->type == NODE_COMMAND)
 	{
 		cmd = node->command;
-		//printf("%s \n", cmd->args[0]);
-		//if (!cmd || !cmd->args || !cmd->args[0])
-		//	return (handle_redirections(cmd->redirs, saved_fds) == -1 ? 1 : 0);
-		if (handle_redirections(cmd->redirs, saved_fds) == -1)
-			return (1);
-		if(cmd->args[0] == NULL)
+		if (!cmd || !cmd->args || !cmd->args[0])
 		{
+			if (handle_redirections(cmd->redirs, saved_fds) == -1)
+				return (1);
 			restore_fds(saved_fds);
-			return (status);
+			return (0);
 		}
 		status = execute_builtin(cmd, new_envp);
 		if (status == -1)
 			status = execute_external(cmd, new_envp);
-		restore_fds(saved_fds);
 	}
 	exit_status(status);
 	return (status);
-		// =============================================================
 }
