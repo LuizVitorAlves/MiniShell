@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/07 15:28:00 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:34:17 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,10 @@ static void	child_external_exec(t_command *cmd, char ***new_envp)
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-
 	saved_fds[0] = -1;
 	saved_fds[1] = -1;
 	if (handle_redirections(cmd->redirs, saved_fds) == -1)
 		exit(1);
-
 	cmd_path = get_cmd_path(cmd->args[0], *new_envp);
 	if (cmd_path)
 	{

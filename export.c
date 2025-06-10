@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:50:00 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:55:30 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 15:31:56 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	ft_export(t_command *cmd_info, char ***new_envp)
 		return (0);
 	}
 	i = 1;
-	while ((arg =  cmd_info->args[i]))
+	while ((arg = cmd_info->args[i]))
 	{
 		eq_pos = ft_strchr(arg, '=');
 		if (export_aux_fun(eq_pos, arg, new_envp) != 0)
