@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 22:47:10 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:03:38 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:48:48 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 int	ft_isspace(int c)
 {

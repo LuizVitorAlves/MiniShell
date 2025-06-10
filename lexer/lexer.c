@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 22:45:37 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:04:53 by lalves-d         ###   ########.fr       */
+/*   Updated: 2025/06/10 14:48:55 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 static int	process_double_char_ops(const char *line, int *i,
 		t_token_type *type_out, char **op_str_out)

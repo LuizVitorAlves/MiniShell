@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:05:43 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:58:50 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:52:51 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	free_redirs(t_redir *redir)
 {

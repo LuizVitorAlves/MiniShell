@@ -1,7 +1,28 @@
 NAME = minishell
 LIBFT_DIR = libft
 
-SRCS = parser.c executor.c builtins.c main.c lexer.c free_parser.c parser_utils.c lexer_builder.c lexer_parts.c lexer_utils.c exec_utils.c redirects.c cd.c export.c export_aux.c unset.c executor_aux.c parser_redirect.c get_word.c enviroments.c exit.c
+SRCS =	parser/parser.c \
+		executor.c \
+		builtins.c \
+		main.c \
+		lexer/lexer.c \
+		parser/free_parser.c \
+		parser/parser_utils.c \
+		lexer/lexer_builder.c \
+		lexer/lexer_parts.c \
+		lexer/lexer_utils.c \
+		exec_utils.c \
+		redirects.c \
+		cd.c \
+		export.c \
+		export_aux.c \
+		unset.c \
+		executor_aux.c \
+		parser/parser_redirect.c \
+		lexer/get_word.c \
+		enviroments.c \
+		exit.c
+
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
@@ -21,9 +42,11 @@ $(LIBFT_DIR)/libft.a:
 
 clean:
 	rm -f $(OBJS)
+	make -C $(LIBFT_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
+	make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 

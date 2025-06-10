@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 22:51:15 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:00:10 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:48:18 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	builder_init(t_builder *b)
 {

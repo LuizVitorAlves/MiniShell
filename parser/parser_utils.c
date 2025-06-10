@@ -6,21 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:41:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/06 14:55:50 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:54:12 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-
-int	is_input_redir(int type)
-{
-	return (type == TOKEN_REDIR_IN || type == TOKEN_HEREDOC);
-}
-
-int	is_output_redir(int type)
-{
-	return (type == TOKEN_REDIR_OUT || type == TOKEN_APPEND);
-}
+#include "../minishell.h"
 
 int	init_command_node(t_node **node, t_command **cmd, char ***args)
 {

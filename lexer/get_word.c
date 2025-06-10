@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 01:22:51 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:59:34 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:56:00 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 char	*get_word(const char *line, int *i)
 {

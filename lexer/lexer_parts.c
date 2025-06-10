@@ -6,11 +6,11 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 22:49:53 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 18:02:53 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/10 14:48:41 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 static void	expand_env_var(const char *line, int *i, t_builder *builder)
 {
