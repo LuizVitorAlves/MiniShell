@@ -24,6 +24,8 @@ SRCS = \
 	enviroments.c \
 	exit.c
 
+OBJS = $(SRCS:.c=.o)
+
 CC = cc
 CFLAGS = -g -Wall -Werror -Wextra
 LIBS = -lreadline
@@ -34,6 +36,8 @@ YELLOW = \033[0;33m
 BLUE = \033[0;34m
 RESET = \033[0m
 
+# ─────────────────────────────────────────────────────────────── #
+
 all: $(NAME)
 
 $(NAME): $(LIBFT_DIR)/libft.a
@@ -43,8 +47,8 @@ $(NAME): $(LIBFT_DIR)/libft.a
 	for src in $(SRCS); do \
 		i=$$((i + 1)); \
 		obj=$${src%.c}.o; \
-		printf "\r[$(GREEN)%3d%%$(RESET)] Compiling %-20s%-20s" $$((i * 100 / total)) $$obj " "; \
-		$(CC) $(CFLAGS) -c $$src -o $$obj > /dev/null || exit 1; \
+		printf "\r[$(GREEN)%3d%%$(RESET)] Compiling %-30s" $$((i * 100 / total)) $$obj; \
+		$(CC) $(CFLAGS) -c $$src -o $$obj || exit 1; \
 		OBJS="$$OBJS $$obj"; \
 	done; \
 	printf "\n"; \
@@ -55,7 +59,7 @@ $(LIBFT_DIR)/libft.a:
 	@make -s -C $(LIBFT_DIR)
 
 clean:
-	@rm -f *.o
+	@rm -f $(OBJS)
 	@make -s -C $(LIBFT_DIR) clean
 
 fclean: clean
@@ -64,7 +68,7 @@ fclean: clean
 	@printf "\n"
 	@rm -f $(NAME)
 	@make -s -C $(LIBFT_DIR) fclean
-	@printf "$(GREEN)Clean! ✔️$(RESET)\n"
+	@printf "$(GREEN)Clean complete! ✔️$(RESET)\n"
 
 re: fclean all
 
