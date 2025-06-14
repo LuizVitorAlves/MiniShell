@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:57:27 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 18:15:38 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <wait.h>
 
-static char	**g_envp_copy; //conferir se posso fazer isso aqui!
+static char	**g_envp_copy; // conferir se posso fazer isso aqui!
 
 void	shell_exit(int exit_code)
 {
@@ -89,8 +89,8 @@ int	set_env_var(char ***env, const char *key, const char *value)
 	char	*new_entry;
 	size_t	key_len;
 	int		i;
-	int j;
-	char **new_env_array;
+	int		j;
+	char	**new_env_array;
 
 	key_len = ft_strlen(key);
 	new_entry = malloc(ft_strlen(key) + ft_strlen(value) + 2);
@@ -100,7 +100,8 @@ int	set_env_var(char ***env, const char *key, const char *value)
 	i = 0;
 	while ((*env)[i])
 	{
-		if (ft_strncmp((*env)[i], key, key_len) == 0 && (*env)[i][key_len] == '=')
+		if (ft_strncmp((*env)[i], key, key_len) == 0
+			&& (*env)[i][key_len] == '=')
 		{
 			free((*env)[i]);
 			(*env)[i] = new_entry;
@@ -203,7 +204,7 @@ static void	handle_empty_or_invalid_input(char *input, t_token *tokens)
 }
 
 static void	execute_valid_command(char *input, t_token *tokens, t_node *ast,
-	char ***envp_copy)
+		char ***envp_copy)
 {
 	if (!ast)
 	{
@@ -217,32 +218,32 @@ static void	execute_valid_command(char *input, t_token *tokens, t_node *ast,
 	free(input);
 }
 
-void    start_shell_loop(char ***envp_copy)
+void	start_shell_loop(char ***envp_copy)
 {
-    char                *input;
-    char                path_name[1024];
-    t_token             *tokens;
-    t_node              *ast;
-    struct sigaction    sa;
+	char				*input;
+	char				path_name[1024];
+	t_token				*tokens;
+	t_node				*ast;
+	struct sigaction	sa;
 
-    while (1)
-    {
-        setup_signals(&sa);
-        ft_strlcpy(path_name, "minishell$ ", 12);
-        input = readline(path_name);
-        if (!input)
-            shell_exit(exit_status(-1));
-        if (input && input[0])
-            add_history(input);
-        tokens = tokenize(input);
-        if (!tokens)
-        {
-            handle_empty_or_invalid_input(input, tokens);
-            continue ;
-        }
-        ast = parse_line(&tokens);
-        execute_valid_command(input, tokens, ast, envp_copy);
-    }
+	while (1)
+	{
+		setup_signals(&sa);
+		ft_strlcpy(path_name, "minishell$ ", 12);
+		input = readline(path_name);
+		if (!input)
+			shell_exit(exit_status(-1));
+		if (input && input[0])
+			add_history(input);
+		tokens = tokenize(input);
+		if (!tokens)
+		{
+			handle_empty_or_invalid_input(input, tokens);
+			continue ;
+		}
+		ast = parse_line(&tokens);
+		execute_valid_command(input, tokens, ast, envp_copy);
+	}
 }
 
 int	main(int argc, char *argv[], char **envp)
