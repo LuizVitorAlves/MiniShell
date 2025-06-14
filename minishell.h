@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:15:38 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 17:55:33 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,5 +196,7 @@ char				*my_get_env(char *name);
 
 int	is_output_redir(int type);
 int	is_input_redir(int type);
+void shell_exit(int exit_code);
+char	***get_main_envp_addr(void);
 
 #endif

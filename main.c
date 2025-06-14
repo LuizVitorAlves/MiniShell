@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:15:23 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 17:57:27 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wait.h>
+
+static char	**g_envp_copy; //conferir se posso fazer isso aqui!
+
+void	shell_exit(int exit_code)
+{
+	if (g_envp_copy)
+		free_string_array(g_envp_copy);
+	clear_history();
+	exit(exit_code);
+}
+
+char	***get_main_envp_addr(void)
+{
+	static char	**main_envp;
+
+	return (&main_envp);
+}
 
 static char	*get_cmd_path_aux(char **paths, char *cmd)
 {
@@ -200,43 +217,44 @@ static void	execute_valid_command(char *input, t_token *tokens, t_node *ast,
 	free(input);
 }
 
-void	start_shell_loop(char ***envp_copy)
+void    start_shell_loop(char ***envp_copy)
 {
-	char				*input;
-	char				path_name[1024];
-	t_token				*tokens;
-	t_node				*ast;
-	struct sigaction	sa;
+    char                *input;
+    char                path_name[1024];
+    t_token             *tokens;
+    t_node              *ast;
+    struct sigaction    sa;
 
-	while (1)
-	{
-		setup_signals(&sa);
-		ft_strlcpy(path_name, "minishell$ ", 12);
-		input = readline(path_name);
-		if (!input)
-			exit(exit_status(-1));
-		if (input && input[0])
-			add_history(input);
-		tokens = tokenize(input);
-		if (!tokens)
-		{
-			handle_empty_or_invalid_input(input, tokens);
-			continue ;
-		}
-		ast = parse_line(&tokens);
-		execute_valid_command(input, tokens, ast, envp_copy);
-	}
+    while (1)
+    {
+        setup_signals(&sa);
+        ft_strlcpy(path_name, "minishell$ ", 12);
+        input = readline(path_name);
+        if (!input)
+            shell_exit(exit_status(-1));
+        if (input && input[0])
+            add_history(input);
+        tokens = tokenize(input);
+        if (!tokens)
+        {
+            handle_empty_or_invalid_input(input, tokens);
+            continue ;
+        }
+        ast = parse_line(&tokens);
+        execute_valid_command(input, tokens, ast, envp_copy);
+    }
 }
 
 int	main(int argc, char *argv[], char **envp)
 {
-	char	**envp_copy;
+	char	***envp_addr;
 
 	(void)argc;
 	(void)argv;
-	envp_copy = dup_env(envp);
-	get_all_env(envp_copy);
+	envp_addr = get_main_envp_addr();
+	*envp_addr = dup_env(envp);
+	get_all_env(*envp_addr);
 	exit_status(0);
-	start_shell_loop(&envp_copy);
+	start_shell_loop(envp_addr);
 	return (0);
 }
