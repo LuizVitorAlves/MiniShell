@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:00:43 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 17:11:38 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,7 +259,7 @@ static void	execute_valid_command(char *input, t_token *tokens, t_node *ast,
 		return ;
 	}
 	executor(ast, envp_copy);
-	wait(NULL);
+	free_node(ast);
 	free_tokens(tokens);
 	free(input);
 }
