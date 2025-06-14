@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:33:41 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/05 17:35:00 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 16:58:08 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,5 +113,6 @@ int	ft_cd(t_command *cmd_info, char ***envp)
 	else
 		perror("minishell: cd: getcwd error after chdir");
 	set_oldpwd(old_pwd_val, *envp);
+	get_all_env(*envp);
 	return (0);
 }

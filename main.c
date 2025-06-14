@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/06 12:07:16 by uviana-b         ###   ########.fr       */
+/*   Updated: 2025/06/14 17:00:43 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 	return (full_path);
 }
 
-static int	free_set_env_var(char ***env, char *key, size_t key_len,
+/*static int	free_set_env_var(char ***env, char *key, size_t key_len,
 	char **new_entry)
 {
 	int	i;
@@ -107,33 +107,45 @@ static int	free_set_env_var(char ***env, char *key, size_t key_len,
 		}
 	}
 	return (i);
-}
+}*/
 
 int	set_env_var(char ***env, const char *key, const char *value)
 {
-	int		i;
-	size_t	key_len;
-	char	**new_env;
-	int		j;
 	char	*new_entry;
+	size_t	key_len;
+	int		i;
+	int j;
+	char **new_env_array;
 
-	i = -1;
-	key_len = strlen(key);
-	new_entry = malloc(strlen(key) + strlen(value) + 2);
+	key_len = ft_strlen(key);
+	new_entry = malloc(ft_strlen(key) + ft_strlen(value) + 2);
 	if (!new_entry)
 		return (1);
 	sprintf(new_entry, "%s=%s", key, value);
-	i = free_set_env_var(env, (char *)key, key_len, &new_entry);
-	new_env = malloc(sizeof(char *) * (i + 2));
-	if (!new_env)
-		return (free(new_entry), 1);
+	i = 0;
+	while ((*env)[i])
+	{
+		if (ft_strncmp((*env)[i], key, key_len) == 0 && (*env)[i][key_len] == '=')
+		{
+			free((*env)[i]);
+			(*env)[i] = new_entry;
+			return (0);
+		}
+		i++;
+	}
+	new_env_array = malloc(sizeof(char *) * (i + 2));
+	if (!new_env_array)
+	{
+		free(new_entry);
+		return (1);
+	}
 	j = -1;
 	while (++j < i)
-		new_env[j] = strdup((*env)[j]);
-	new_env[i] = new_entry;
-	new_env[i + 1] = NULL;
+		new_env_array[j] = (*env)[j];
+	new_env_array[i] = new_entry;
+	new_env_array[i + 1] = NULL;
 	free(*env);
-	*env = new_env;
+	*env = new_env_array;
 	return (0);
 }
 
@@ -166,7 +178,7 @@ char	**dup_env(char **envp)
 	return (new_env);
 }
 
-void	print_tokens(t_token *tokens)
+/*void	print_tokens(t_token *tokens)
 {
 	while (tokens)
 	{
@@ -186,7 +198,7 @@ void	print_tokens(t_token *tokens)
 			printf("EOF\n");
 		tokens = tokens->next;
 	}
-}
+}*/
 
 void	handler_sa_quit(int sig)
 {
