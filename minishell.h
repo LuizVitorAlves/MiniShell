@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/06 14:51:07 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 17:15:38 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include "libft/libft.h"
-# include <limits.h> //tirar
+# include <limits.h>
 
 typedef enum e_token_type
 {

@@ -6,7 +6,7 @@
 /*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:18:55 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:11:38 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 17:15:23 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,30 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wait.h>
-
-/*static void	print_ast(t_node *node, int level)
-{
-	int	i;
-
-	if (!node)
-		return ;
-	for (i = 0; i < level; i++)
-		printf("  ");
-	if (node->type == NODE_PIPE)
-	{
-		printf("PIPE\n");
-		print_ast(node->left, level + 1);
-		print_ast(node->right, level + 1);
-	}
-	else if (node->type == NODE_COMMAND)
-	{
-		printf("COMMAND: ");
-		i = 0;
-		while (node->command->args && node->command->args[i])
-			printf("[%s] ", node->command->args[i++]);
-		printf("\n");
-	}
-}*/
 
 static char	*get_cmd_path_aux(char **paths, char *cmd)
 {
@@ -90,24 +66,6 @@ char	*get_cmd_path(char *cmd, char **envp)
 	free(paths);
 	return (full_path);
 }
-
-/*static int	free_set_env_var(char ***env, char *key, size_t key_len,
-	char **new_entry)
-{
-	int	i;
-
-	i = -1;
-	while ((*env)[++i])
-	{
-		if (strncmp((*env)[i], key, key_len) == 0 && (*env)[i][key_len] == '=')
-		{
-			free((*env)[i]);
-			(*env)[i] = *new_entry;
-			return (0);
-		}
-	}
-	return (i);
-}*/
 
 int	set_env_var(char ***env, const char *key, const char *value)
 {
@@ -177,28 +135,6 @@ char	**dup_env(char **envp)
 	}
 	return (new_env);
 }
-
-/*void	print_tokens(t_token *tokens)
-{
-	while (tokens)
-	{
-		if (tokens->type == TOKEN_WORD)
-			printf("WORD: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_PIPE)
-			printf("PIPE: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_REDIR_IN)
-			printf("REDIR_IN: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_REDIR_OUT)
-			printf("REDIR_OUT: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_APPEND)
-			printf("APPEND: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_HEREDOC)
-			printf("HEREDOC: '%s'\n", tokens->value);
-		else if (tokens->type == TOKEN_EOF)
-			printf("EOF\n");
-		tokens = tokens->next;
-	}
-}*/
 
 void	handler_sa_quit(int sig)
 {
@@ -291,33 +227,6 @@ void	start_shell_loop(char ***envp_copy)
 		execute_valid_command(input, tokens, ast, envp_copy);
 	}
 }
-
-/*void	start_shell_loop(char ***envp_copy)
-{
-	char				*input;
-	char				path_name[1024];
-	t_token				*tokens;
-	t_node				*ast;
-	struct sigaction	sa;
-
-	while (1)
-	{
-		setup_signals(&sa);
-		ft_strlcpy(path_name, "minishell$ ", 12);
-		input = readline(path_name);
-		if (input && input[0])
-			add_history(input);
-		tokens = tokenize(input);
-		if (!tokens)
-		{
-			handle_empty_or_invalid_input(input, tokens);
-			continue ;
-		}
-		ast = parse_line(&tokens);
-		print_ast(ast, 0);
-		execute_valid_command(input, tokens, ast, envp_copy);
-	}
-}*/
 
 int	main(int argc, char *argv[], char **envp)
 {
