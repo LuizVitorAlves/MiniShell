@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/10 15:34:17 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 20:21:33 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,29 @@ static int	execute_external(t_command *cmd, char ***new_envp)
 	return (1);
 }
 
+static int	executor_aux(t_node *node, int *saved_fds,
+	char ***new_envp, int *status)
+{
+	t_command	*cmd;
+
+	cmd = node->command;
+	if (!cmd || !cmd->args || !cmd->args[0])
+	{
+		if (handle_redirections(cmd->redirs, saved_fds) == -1)
+			return (1);
+		restore_fds(saved_fds);
+		return (0);
+	}
+	*status = execute_builtin(cmd, new_envp);
+	if (*status == -1)
+		*status = execute_external(cmd, new_envp);
+	return (0);
+}
+
 int	executor(t_node *node, char ***new_envp)
 {
 	int			status;
 	int			saved_fds[2];
-	t_command	*cmd;
 
 	saved_fds[0] = -1;
 	saved_fds[1] = -1;
@@ -77,20 +95,7 @@ int	executor(t_node *node, char ***new_envp)
 		return (0);
 	if (node->type == NODE_PIPE)
 		status = execute_pipe(node, new_envp);
-	else if (node->type == NODE_COMMAND)
-	{
-		cmd = node->command;
-		if (!cmd || !cmd->args || !cmd->args[0])
-		{
-			if (handle_redirections(cmd->redirs, saved_fds) == -1)
-				return (1);
-			restore_fds(saved_fds);
-			return (0);
-		}
-		status = execute_builtin(cmd, new_envp);
-		if (status == -1)
-			status = execute_external(cmd, new_envp);
-	}
+	status = executor_aux(node, saved_fds, new_envp, &status);
 	exit_status(status);
 	return (status);
 }

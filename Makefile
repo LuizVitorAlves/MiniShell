@@ -22,7 +22,13 @@ SRCS = \
 	parser/parser_redirect.c \
 	lexer/get_word.c \
 	enviroments.c \
-	exit.c
+	exit.c \
+	atol.c \
+	redirects_aux.c \
+	heredoc.c \
+	env_utils.c \
+	path_utils.c \
+	shell_control.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -35,8 +41,6 @@ GREEN = \033[0;32m
 YELLOW = \033[0;33m
 BLUE = \033[0;34m
 RESET = \033[0m
-
-# ─────────────────────────────────────────────────────────────── #
 
 all: $(NAME)
 

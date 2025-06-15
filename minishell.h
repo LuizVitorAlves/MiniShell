@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:55:33 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 23:09:31 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 
 # define MINISHELL_H
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+# include "libft/libft.h"
+# include <limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
-# include "libft/libft.h"
-# include <limits.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
 
 typedef enum e_token_type
 {
@@ -82,67 +82,18 @@ typedef struct s_node
 	t_command		*command;
 }					t_node;
 
-// exec_utils.c
-int					ft_strcmp(const char *s1, const char *s2);
-long				ft_atol(const char *str);
-char				*ft_strndup(const char *s, size_t n);
-
-// Lexer.c
-/*t_token	*tokenize(const char *line);
-t_token_type		get_token_type(const char *line, int *i);
-char				*get_op_str(t_token_type type);
+// get_word
 char				*get_word(const char *line, int *i);
-char				*get_unquoted_word(const char *line, int *i);
-char				*get_quoted_word(const char *line, int *i, char quote);
-void				add_token(t_token **head, t_token *new_token);
-t_token	*create_token(t_token_type type, const char *value);*/
-// void	ft_echo(t_token *tokens, char **newenvp);
-int					ft_echo(t_command *cmd_info);
-int					ft_cd(t_command *cmd_info, char ***envp);
 
-void				print_tokens(t_token *tokens);
-// void ft_exit(t_token *tokens, char *input);
-int					ft_exit(t_command *cmd_info);
-
-int					ft_pwd(t_command *cmd_info);
-char				*get_cmd_path(char *tokens, char **new_envp);
-// int ft_cd(t_token *tokens, char *path_name);
-// int ft_cd(t_token *tokens, char *path_name, char ***envp);
-
-// void ft_export(t_token *token, char ***new_envp);
-int					ft_export(t_command *cmd_info, char ***new_envp);
-
-// void ft_unset(t_token *token, char ***new_envp);
-int					ft_unset(t_command *cmd_info, char ***new_envp);
-
-void				create_env_arr(char ***env_vars);
-// void ft_env(char **new_envp);//remove after test
-int					ft_env(t_command *cmd_info, char **envp_copy);
-
-char				**put_args_array(char *input);
-extern char			**env_vars;
-int					set_env_var(char ***env, const char *key,
-						const char *value);
-// int executor(t_token *t okens, char *path_name, char *input,char ***new_envp);
-int					executor(t_node *node, char ***new_envp);
-
-// Lexer.c
-t_token				*tokenize(const char *line);
-
-// Lexer_builder.c
+// lexer_builder
 void				builder_init(t_builder *b);
 void				builder_destroy(t_builder *b);
 void				builder_append_char(t_builder *b, char c);
 void				builder_append_str(t_builder *b, char *str);
 char				*builder_finalize(t_builder *b);
 
-// Lexer_utils.c
-int					ft_isspace(int c);
-t_token				*create_token(t_token_type type, const char *value);
-void				add_token(t_token **head, t_token *new_token);
-void				free_tokens(t_token *head);
-
-// Lexer_parts.c
+// lexer_parts
+int					exit_status(int status);
 void				handle_expansion(const char *line, int *i,
 						t_builder *builder);
 void				get_unquoted_part(const char *line, int *i,
@@ -150,19 +101,27 @@ void				get_unquoted_part(const char *line, int *i,
 int					get_quoted_part(const char *line, int *i,
 						t_builder *builder);
 
-// Parser.c
-t_node				*parse_command(t_token **tokens);
-t_node				*parse_pipeline(t_token **tokens);
-t_node				*parse_line(t_token **tokens);
+// lexer_utils
+int					ft_isspace(int c);
+t_token				*create_token(t_token_type type, const char *value);
+void				add_token(t_token **head, t_token *new_token);
+void				free_tokens(t_token *head);
 
-// Free_Parser.c
+// lexer
+t_token				*tokenize(const char *line);
+
+// free_parser
 void				free_redirs(t_redir *redir);
 void				free_command(t_command *cmd);
 void				free_node(t_node *node);
 void				free_string_array(char **arr);
 
-// Parser_utils.c
+// parser_redirect
+int					is_input_redir(int type);
+int					is_output_redir(int type);
 int					handle_redirection(t_command *cmd, t_token **curr);
+
+// parser_utils
 int					init_command_node(t_node **node, t_command **cmd,
 						char ***args);
 int					attach_redirection_or_arg(t_command *cmd, t_token **curr,
@@ -170,19 +129,38 @@ int					attach_redirection_or_arg(t_command *cmd, t_token **curr,
 void				fill_command_args(t_command *cmd, char **args, int argc);
 t_node				*create_pipe_node(t_node *left, t_token **tokens);
 
-// redirects
-void				restore_fds(int saved_fds[2]);
-//int					handle_redirections(t_redir *redirs, int saved_fds[2]);
-int	handle_redirections(t_redir *redir, int saved_fds[2]);
-int					exit_status(int status);
+// parser
+t_node				*parse_command(t_token **tokens);
+t_node				*parse_pipeline(t_token **tokens);
+t_node				*parse_line(t_token **tokens);
 
+// atol
+long				ft_atol(const char *str);
+
+// builtins
+int					ft_echo(t_command *cmd_info);
+int					ft_pwd(t_command *cmd_info);
+int					ft_env(t_command *cmd_info, char **envp_copy);
+
+// cd
+int					ft_cd(t_command *cmd_info, char ***envp);
+
+// env_utils
+char				***get_main_envp_addr(void);
+int					set_env_var(char ***env, const char *key,
+						const char *value);
+char				**dup_env(char **envp);
+int					append_env_var(char ***env, char *new_entry, int i);
+
+// enviroments
 char				**get_all_env(char **envp);
+char				*my_get_env(char *name);
 
-// export aux
-char				**bublesort(char **new_envp);
-int					is_valid_var_name(const char *name, int len);
-void				print_export_env(char **envp);
-// EXECUTOR
+// exec_utils
+int					ft_strcmp(const char *s1, const char *s2);
+char				*ft_strndup(const char *s, size_t n);
+
+// executor_aux
 void				handle_pipe_left(t_node *node, char ***new_envp,
 						int *pipe_fd);
 void				handle_pipe_right(t_node *node, char ***new_envp,
@@ -190,13 +168,48 @@ void				handle_pipe_right(t_node *node, char ***new_envp,
 int					execute_pipe(t_node *node, char ***new_envp);
 int					execute_builtin(t_command *cmd, char ***new_envp);
 
-int					handle_redirection(t_command *cmd, t_token **curr);
-char				*get_word(const char *line, int *i);
-char				*my_get_env(char *name);
+// executor
+int					executor(t_node *node, char ***new_envp);
 
-int	is_output_redir(int type);
-int	is_input_redir(int type);
-void shell_exit(int exit_code);
-char	***get_main_envp_addr(void);
+// exit
+void				exit_aux(t_command *cmd_info, int i);
+int					ft_exit(t_command *cmd_info);
 
+// export_aux
+char				**bublesort(char **new_envp);
+int					is_valid_var_name(const char *name, int len);
+void				print_export_env(char **envp);
+
+// export
+int					ft_export(t_command *cmd_info, char ***new_envp);
+
+// heredoc
+int					aux_perror(void);
+int					my_heredoc(char *eof);
+
+// path_utils
+char				*get_cmd_path(char *cmd, char **envp);
+char				*get_cmd_path_aux(char **paths, char *cmd);
+
+// redirects
+int					handle_redirections(t_redir *redir, int saved_fds[2]);
+void				restore_fds(int saved_fds[2]);
+
+// shell_control
+void				shell_exit(int exit_code);
+void				handle_empty_or_invalid_input(char *input, t_token *tokens);
+void				execute_valid_command(char *input, t_token *tokens,
+						t_node *ast, char ***envp_copy);
+
+// unset
+void				unset_aux(char *arg_to_unset, char ***new_envp);
+int					ft_unset(t_command *cmd_info, char ***new_envp);
+
+// redirect_aux
+int					process_input_redirection(t_redir *redir,
+						int *last_input_fd);
+int					process_output_redirection(t_redir *redir,
+						int *last_output_fd);
+int					handle_aux(t_redir *current, int *last_input_fd,
+						int *last_output_fd);
 #endif

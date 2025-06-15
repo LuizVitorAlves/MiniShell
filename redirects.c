@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirects.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 18:07:56 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 17:15:51 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 23:06:05 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,36 +19,39 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static int	my_heredoc(char *eof)
+int	process_input_redirection(t_redir *redir, int *last_input_fd)
 {
-	char	*input;
-	int		pid_fd[2];
-
-	if (pipe(pid_fd) == -1)
+	if (*last_input_fd != -1)
+		close(*last_input_fd);
+	if (redir->type == TOKEN_HEREDOC)
+		*last_input_fd = my_heredoc(redir->file);
+	else
+		*last_input_fd = open(redir->file, O_RDONLY);
+	if (*last_input_fd == -1)
 	{
-		perror("minishell: pipe");
+		fprintf(stderr, "minishell: %s: %s\n", redir->file, strerror(errno));
 		return (-1);
 	}
-	while (1)
+	return (0);
+}
+
+int	process_output_redirection(t_redir *redir, int *last_output_fd)
+{
+	int	flags;
+
+	if (*last_output_fd != -1)
+		close(*last_output_fd);
+	if (redir->type == TOKEN_REDIR_OUT)
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+	else
+		flags = O_WRONLY | O_CREAT | O_APPEND;
+	*last_output_fd = open(redir->file, flags, 0644);
+	if (*last_output_fd == -1)
 	{
-		input = readline("> ");
-		if (!input)
-		{
-			fprintf(stderr,
-				"minishell: warning: missing end delimiter for '%s'\n",
-				eof);
-			break ;
-		}
-		if (ft_strncmp(input, eof, ft_strlen(eof) + 1) == 0)
-		{
-			free(input);
-			break ;
-		}
-		ft_putendl_fd(input, pid_fd[1]);
-		free(input);
+		fprintf(stderr, "minishell: %s: %s\n", redir->file, strerror(errno));
+		return (-1);
 	}
-	close(pid_fd[1]);
-	return (pid_fd[0]);
+	return (0);
 }
 
 int	handle_redirections(t_redir *redir, int saved_fds[2])
@@ -62,44 +65,8 @@ int	handle_redirections(t_redir *redir, int saved_fds[2])
 	last_output_fd = -1;
 	saved_fds[0] = -1;
 	saved_fds[1] = -1;
-	while (current)
-	{
-		if (is_input_redir(current->type))
-		{
-			if (last_input_fd != -1)
-				close(last_input_fd);
-			if (current->type == TOKEN_HEREDOC)
-				last_input_fd = my_heredoc(current->file);
-			else
-				last_input_fd = open(current->file, O_RDONLY);
-			if (last_input_fd == -1)
-			{
-				fprintf(stderr, "minishell: %s: %s\n", current->file,
-					strerror(errno));
-				return (-1);
-			}
-		}
-		else if (is_output_redir(current->type))
-		{
-			if (last_output_fd != -1)
-				close(last_output_fd);
-			if (current->type == TOKEN_REDIR_OUT)
-				last_output_fd = open(current->file,
-						O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			else
-				last_output_fd = open(current->file,
-						O_WRONLY | O_CREAT | O_APPEND, 0644);
-			if (last_output_fd == -1)
-			{
-				fprintf(stderr, "minishell: %s: %s\n", current->file,
-					strerror(errno));
-				if (last_input_fd != -1)
-					close(last_input_fd);
-				return (-1);
-			}
-		}
-		current = current->next;
-	}
+	if (handle_aux(current, &last_input_fd, &last_output_fd) == -1)
+		return (-1);
 	if (last_input_fd != -1)
 	{
 		saved_fds[0] = dup(STDIN_FILENO);

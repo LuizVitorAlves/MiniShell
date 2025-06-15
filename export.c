@@ -3,18 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:50:00 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/10 15:31:56 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 20:27:01 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	aux_support(int name_len, char *arg, char **name, char **value,
+static int	aux_support(char *arg, char **name, char **value,
 		char *eq_pos)
 {
+	int		name_len;
+
+	name_len = eq_pos - arg;
 	if (name_len == 0)
 	{
 		fprintf(stderr, "minishell: export: `%s': not a valid identifier\n",
@@ -44,15 +47,13 @@ static void	error_set_var(int *export_status, char *arg)
 static int	export_aux_fun(char *eq_pos, char *arg, char ***new_envp)
 {
 	int		export_status;
-	int		name_len;
 	char	*name;
 	char	*value;
 
 	export_status = 0;
 	if (eq_pos)
 	{
-		name_len = eq_pos - arg;
-		if (aux_support(name_len, arg, &name, &value, eq_pos))
+		if (aux_support(arg, &name, &value, eq_pos))
 			return (1);
 		if (set_env_var(new_envp, name, value) != 0)
 		{
@@ -84,12 +85,14 @@ int	ft_export(t_command *cmd_info, char ***new_envp)
 		return (0);
 	}
 	i = 1;
-	while ((arg = cmd_info->args[i]))
+	arg = cmd_info->args[i];
+	while (arg)
 	{
 		eq_pos = ft_strchr(arg, '=');
 		if (export_aux_fun(eq_pos, arg, new_envp) != 0)
 			export_status = 1;
 		i++;
+		arg = cmd_info->args[i];
 	}
 	get_all_env(*new_envp);
 	return (export_status);

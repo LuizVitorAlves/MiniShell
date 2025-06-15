@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:33:41 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 16:58:08 by lalves-d@st      ###   ########.fr       */
+/*   Updated: 2025/06/14 22:30:46 by uviana-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@
 static int	old_pwd_home(char *current_pwd_buffer, char **old_pwd_val,
 		t_command *cmd_info, char **target_path)
 {
-	if (getcwd(current_pwd_buffer, PATH_MAX) != NULL)
+	*old_pwd_val = NULL;
+	if (getcwd(current_pwd_buffer, 1024) != NULL)
 	{
 		*old_pwd_val = ft_strdup(current_pwd_buffer);
 		if (!(*old_pwd_val))
@@ -93,7 +94,6 @@ int	ft_cd(t_command *cmd_info, char ***envp)
 	char	current_pwd_buffer[1024];
 	char	*old_pwd_val;
 
-	old_pwd_val = NULL;
 	old_pwd_home(current_pwd_buffer, &old_pwd_val, cmd_info, &target_path);
 	target_path = back_dir_many_args(cmd_info, old_pwd_val);
 	if (!target_path)
