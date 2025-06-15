@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 17:44:36 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 20:21:33 by uviana-b         ###   ########.fr       */
+/*   Updated: 2025/06/15 00:36:56 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,14 +88,19 @@ int	executor(t_node *node, char ***new_envp)
 	int			status;
 	int			saved_fds[2];
 
+	status = 0;
 	saved_fds[0] = -1;
 	saved_fds[1] = -1;
-	status = 0;
 	if (!node)
 		return (0);
 	if (node->type == NODE_PIPE)
+	{
 		status = execute_pipe(node, new_envp);
-	status = executor_aux(node, saved_fds, new_envp, &status);
+	}
+	else
+	{
+			executor_aux(node, saved_fds, new_envp, &status);
+	}
 	exit_status(status);
 	return (status);
 }

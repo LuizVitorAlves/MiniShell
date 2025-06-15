@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lalves-d@student.42.rio <lalves-d>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 15:17:29 by lalves-d          #+#    #+#             */
-/*   Updated: 2025/06/14 23:09:31 by uviana-b         ###   ########.fr       */
+/*   Updated: 2025/06/15 00:35:33 by lalves-d@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,4 +212,5 @@ int					process_output_redirection(t_redir *redir,
 						int *last_output_fd);
 int					handle_aux(t_redir *current, int *last_input_fd,
 						int *last_output_fd);
+
 #endif
